@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tipo de Combustible"/>
+
+    <Spinner
+        android:id="@+id/spTipoCombustible"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/btnCalcular"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Consultar Precio"
+        android:layout_marginTop="20dp"/>
+
+    <TextView
+        android:id="@+id/txtResultado"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Resultado"
+        android:textSize="18sp"
+        android:layout_marginTop="20dp"/>
+
+    <TextView
+        android:id="@+id/txtGalonesDeseados"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ingrese los Galones Deseados"
+        android:textSize="18sp"
+        android:layout_marginTop="20dp"/>
+
+    <EditText
+        android:id="@+id/etGalones"
+        android:layout_width="191dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:hint="Galones"
+        android:inputType="numberDecimal" />
+
+    <Button
+        android:id="@+id/calcularGalones"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Calcular Galones" />
+
+    <TextView
+        android:id="@+id/txtResultadoGalones"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Resultado Galones"
+        android:textSize="18sp"
+        android:layout_marginTop="20dp"/>
+
+    <Button
+        android:id="@+id/btnVolver"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="Volver" />
+
+</LinearLayout>
