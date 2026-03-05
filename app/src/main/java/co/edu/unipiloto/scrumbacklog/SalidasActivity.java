@@ -14,7 +14,7 @@ import co.edu.unipiloto.scrumbacklog.database.DatabaseHelper;
 public class SalidasActivity extends AppCompatActivity {
 
     TextView txtInventarioDisponible;
-    Spinner spTipoCombustible;
+    Spinner spTipoCombustible, spCiudad, spZona;
     EditText etSalida;
     Button btnRetirar, btnVolver;
     ListView listHistorial;
@@ -33,23 +33,44 @@ public class SalidasActivity extends AppCompatActivity {
 
         txtInventarioDisponible = findViewById(R.id.txtInventarioDisponible);
         spTipoCombustible = findViewById(R.id.spTipoCombustible);
+        spCiudad = findViewById(R.id.spCiudad);
+        spZona = findViewById(R.id.spZona);
         etSalida = findViewById(R.id.etSalida);
         btnRetirar = findViewById(R.id.btnRetirar);
         btnVolver = findViewById(R.id.btnVolver);
         listHistorial = findViewById(R.id.listHistorial);
 
+        // Spinner Combustible
         String[] tipos = {"Corriente", "Extra", "Diesel"};
+        ArrayAdapter<String> adapterTipo = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, tipos);
+        adapterTipo.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spTipoCombustible.setAdapter(adapterTipo);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                this,
-                android.R.layout.simple_spinner_item,
-                tipos
-        );
+        // Spinner Ciudad
+        ArrayList<String> ciudades = dbHelper.obtenerCiudades();
+        ArrayAdapter<String> adapterCiudad = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, ciudades);
+        adapterCiudad.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spCiudad.setAdapter(adapterCiudad);
 
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spTipoCombustible.setAdapter(adapter);
+        // Spinner Zona
+        spCiudad.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, android.view.View view, int position, long id) {
+                String ciudad = spCiudad.getSelectedItem().toString();
+                ArrayList<String> zonas = dbHelper.obtenerZonas(ciudad);
+                ArrayAdapter<String> adapterZona = new ArrayAdapter<>(SalidasActivity.this,
+                        android.R.layout.simple_spinner_item, zonas);
+                adapterZona.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spZona.setAdapter(adapterZona);
+                actualizarInventarioUI();
+            }
 
-        // Mostrar inventario cuando cambia el tipo
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
         spTipoCombustible.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, android.view.View view, int position, long id) {
@@ -60,18 +81,23 @@ public class SalidasActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        adapterHistorial = new ArrayAdapter<>(
-                this,
-                android.R.layout.simple_list_item_1,
-                historial
-        );
+        spZona.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, android.view.View view, int position, long id) {
+                actualizarInventarioUI();
+            }
 
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
+        // Historial
+        adapterHistorial = new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_1, historial);
         listHistorial.setAdapter(adapterHistorial);
 
         btnRetirar.setOnClickListener(view -> {
-
             String cantidadTexto = etSalida.getText().toString().trim();
-
             if (cantidadTexto.isEmpty()) {
                 Toast.makeText(this, "Ingrese cantidad", Toast.LENGTH_SHORT).show();
                 return;
@@ -79,61 +105,31 @@ public class SalidasActivity extends AppCompatActivity {
 
             double galones = Double.parseDouble(cantidadTexto);
             String tipo = spTipoCombustible.getSelectedItem().toString();
-            double precio = obtenerPrecio(tipo);
+            String ciudad = spCiudad.getSelectedItem().toString();
+            String zona = spZona.getSelectedItem().toString();
+            double precio = dbHelper.obtenerPrecioZona(tipo, ciudad, zona);
 
-            // VALIDAR INVENTARIO REAL DESDE BD
-            double inventarioActual = dbHelper.obtenerInventario(tipo);
-
+            double inventarioActual = dbHelper.obtenerInventario(tipo, ciudad, zona);
             if (galones > inventarioActual) {
-                Toast.makeText(
-                        this,
-                        "Inventario insuficiente",
-                        Toast.LENGTH_SHORT
-                ).show();
+                Toast.makeText(this, "Inventario insuficiente", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            String fecha = new SimpleDateFormat(
-                    "dd/MM/yyyy HH:mm",
-                    Locale.getDefault()
-            ).format(new Date());
+            String fecha = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date());
 
-            boolean resultado = dbHelper.registrarSalida(
-                    tipo,
-                    galones,
-                    precio,
-                    fecha
-            );
+            boolean resultado = dbHelper.registrarSalida(tipo, galones, precio, fecha, ciudad, zona);
 
             if (resultado) {
-
                 double total = galones * precio;
-
-                String registro = fecha +
-                        " | " + tipo +
-                        " | " + galones + " gal" +
-                        " | $" + total;
-
+                String registro = fecha + " | " + tipo + " | " + ciudad + "/" + zona +
+                        " | " + galones + " gal | $" + total;
                 historial.add(0, registro);
                 adapterHistorial.notifyDataSetChanged();
-
                 etSalida.setText("");
-
-                actualizarInventarioUI(); // ACTUALIZA INVENTARIO EN PANTALLA
-
-                Toast.makeText(
-                        this,
-                        "Salida registrada correctamente",
-                        Toast.LENGTH_SHORT
-                ).show();
-
+                actualizarInventarioUI();
+                Toast.makeText(this, "Salida registrada correctamente", Toast.LENGTH_SHORT).show();
             } else {
-
-                Toast.makeText(
-                        this,
-                        "Error al registrar",
-                        Toast.LENGTH_SHORT
-                ).show();
+                Toast.makeText(this, "Error al registrar", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -141,24 +137,11 @@ public class SalidasActivity extends AppCompatActivity {
     }
 
     private void actualizarInventarioUI() {
-
         String tipo = spTipoCombustible.getSelectedItem().toString();
-        double inventario = dbHelper.obtenerInventario(tipo);
+        String ciudad = spCiudad.getSelectedItem().toString();
+        String zona = spZona.getSelectedItem().toString();
 
+        double inventario = dbHelper.obtenerInventario(tipo, ciudad, zona);
         txtInventarioDisponible.setText(inventario + " galones disponibles");
-    }
-
-    private double obtenerPrecio(String tipo) {
-
-        switch (tipo) {
-            case "Corriente":
-                return 15991;
-            case "Extra":
-                return 22673;
-            case "Diesel":
-                return 11276;
-            default:
-                return 0;
-        }
     }
 }

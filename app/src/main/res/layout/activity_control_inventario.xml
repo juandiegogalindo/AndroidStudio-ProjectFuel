@@ -15,20 +15,27 @@
             android:text="Control de Inventario"
             android:textSize="22sp"
             android:textStyle="bold"
-            android:layout_marginBottom="24dp"/>
+            android:layout_marginBottom="16dp"/>
 
-        <!-- Opcional: Spinner para filtrar por combustible -->
+        <!-- Spinner para filtrar por combustible -->
         <Spinner
             android:id="@+id/spFiltroCombustible"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"/>
 
-        <!-- Inventario -->
+        <!-- Spinner para filtrar por ubicación -->
+        <Spinner
+            android:id="@+id/spFiltroUbicacion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"/>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Niveles de inventario"/>
+            android:text="Niveles de inventario"
+            android:layout_marginBottom="8dp"/>
 
         <LinearLayout
             android:id="@+id/layoutInventario"
@@ -36,21 +43,19 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_marginBottom="24dp">
-            <!-- Aquí se agregarán dinámicamente los niveles -->
         </LinearLayout>
 
-        <!-- Historial movimientos -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Historial de movimientos"/>
+            android:text="Historial de movimientos"
+            android:layout_marginBottom="8dp"/>
 
         <LinearLayout
             android:id="@+id/layoutHistorial"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <!-- Aquí se mostrarán los últimos movimientos -->
         </LinearLayout>
 
         <Button
@@ -60,5 +65,4 @@
             android:text="Volver"/>
 
     </LinearLayout>
-
 </ScrollView>

@@ -1,73 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:padding="24dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Tipo de Combustible"/>
-
-    <Spinner
-        android:id="@+id/spCombustible"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-    <EditText
-        android:id="@+id/etCantidad"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Cantidad en galones"
-        android:inputType="numberDecimal"
-        android:layout_marginTop="16dp"/>
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/btnAgregar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Agregar Inventario"
-        android:layout_marginTop="16dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tipo de Combustible"/>
 
-    <TextView
-        android:id="@+id/txtInventarioDiesel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Inventario Diesel: 0"
-        android:textSize="18sp"
-        android:layout_marginTop="20dp"/>
+        <Spinner
+            android:id="@+id/spCombustible"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
-    <TextView
-        android:id="@+id/txtInventarioCorriente"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Inventario Corriente: 0"
-        android:textSize="18sp"
-        android:layout_marginTop="20dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ciudad"
+            android:layout_marginTop="16dp"/>
 
-    <TextView
-        android:id="@+id/txtInventarioExtra"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Inventario Extra: 0"
-        android:textSize="18sp"
-        android:layout_marginTop="20dp"/>
+        <Spinner
+            android:id="@+id/spCiudad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
-    <TextView
-        android:id="@+id/txtInventarioTotal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Inventario Total: 0"
-        android:textSize="18sp"
-        android:layout_marginTop="20dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Zona"
+            android:layout_marginTop="16dp"/>
 
-    <Button
-        android:id="@+id/btnVolver"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:text="Volver"/>
+        <Spinner
+            android:id="@+id/spZona"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
-</LinearLayout>
+        <EditText
+            android:id="@+id/etCantidad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Cantidad en galones"
+            android:inputType="numberDecimal"
+            android:layout_marginTop="16dp"/>
+
+        <Button
+            android:id="@+id/btnAgregar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Agregar Inventario"
+            android:layout_marginTop="16dp"/>
+
+        <TextView
+            android:id="@+id/txtInventarioDiesel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Inventario Diesel: 0"
+            android:textSize="18sp"
+            android:layout_marginTop="20dp"/>
+
+        <TextView
+            android:id="@+id/txtInventarioCorriente"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Inventario Corriente: 0"
+            android:textSize="18sp"
+            android:layout_marginTop="20dp"/>
+
+        <TextView
+            android:id="@+id/txtInventarioExtra"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Inventario Extra: 0"
+            android:textSize="18sp"
+            android:layout_marginTop="20dp"/>
+
+        <TextView
+            android:id="@+id/txtInventarioTotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Inventario Total: 0"
+            android:textSize="18sp"
+            android:layout_marginTop="20dp"/>
+
+        <Button
+            android:id="@+id/btnVolver"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:text="Volver"/>
+
+    </LinearLayout>
+
+</ScrollView>
