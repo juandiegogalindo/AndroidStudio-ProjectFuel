@@ -1,32 +1,24 @@
 package co.edu.unipiloto.scrumbacklog;
 
 import android.os.Bundle;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.TextView;
+import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class ConsultaActivity extends AppCompatActivity {
 
     Spinner spTipoCombustible;
-    Button btnCalcular;
-    Button btnVolver;
-
-    Button btnCalcularGalones;
-    TextView txtResultado;
-    TextView txtResultadoGalones;;
+    Button btnCalcular, btnCalcularGalones, btnVolver;
+    TextView txtResultado, txtResultadoGalones;
     EditText etGalones;
 
-
-
+    DatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_consulta);
+
+        dbHelper = new DatabaseHelper(this);
 
         spTipoCombustible = findViewById(R.id.spTipoCombustible);
         btnCalcular = findViewById(R.id.btnCalcular);
@@ -48,47 +40,32 @@ public class ConsultaActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spTipoCombustible.setAdapter(adapter);
 
-        btnCalcular.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String tipoSeleccionado = spTipoCombustible.getSelectedItem().toString();
-                double precio = 0;
+        btnCalcular.setOnClickListener(view -> {
 
-                if (tipoSeleccionado.equals("Corriente")) {
-                    precio = 15.991;
-                } else if (tipoSeleccionado.equals("Extra")) {
-                    precio = 22.673;
-                } else if (tipoSeleccionado.equals("Diesel")) {
-                    precio = 11.276;
-                }
+            String tipo = spTipoCombustible.getSelectedItem().toString();
+            double precio = dbHelper.obtenerPrecio(tipo);
 
-                txtResultado.setText("Precio: $" + precio);
-            }
+            txtResultado.setText("Precio actual: $" + precio);
         });
 
-        btnCalcularGalones.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String tipoSeleccionado = spTipoCombustible.getSelectedItem().toString();
-                double galonesDeseados = Integer.parseInt(etGalones.getText().toString());
-                double respuestaGalones = 0;
+        btnCalcularGalones.setOnClickListener(view -> {
 
-                if (tipoSeleccionado.equals("Corriente")) {
-                    respuestaGalones = 15.991 * galonesDeseados;
-                } else if (tipoSeleccionado.equals("Extra")) {
-                    respuestaGalones = 22.673 * galonesDeseados;
-                } else if (tipoSeleccionado.equals("Diesel")) {
-                    respuestaGalones = 11.276 * galonesDeseados;
-                }
-                txtResultadoGalones.setText("Precio: $" + respuestaGalones);
+            String galonesTexto = etGalones.getText().toString().trim();
+
+            if (galonesTexto.isEmpty()) {
+                Toast.makeText(this, "Ingrese galones", Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            double galones = Double.parseDouble(galonesTexto);
+            String tipo = spTipoCombustible.getSelectedItem().toString();
+
+            double precio = dbHelper.obtenerPrecio(tipo);
+            double total = galones * precio;
+
+            txtResultadoGalones.setText("Total: $" + total);
         });
 
-        btnVolver.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+        btnVolver.setOnClickListener(view -> finish());
     }
 }

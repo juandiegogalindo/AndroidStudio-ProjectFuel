@@ -1,42 +1,38 @@
 package co.edu.unipiloto.scrumbacklog;
 
 import android.os.Bundle;
-import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.TextView;
+import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class InventarioActivity extends AppCompatActivity {
 
     Spinner spCombustible;
     EditText etCantidad;
-    Button btnAgregar;
-    Button btnVolver;
+    Button btnAgregar, btnVolver;
+
     TextView txtInventarioTotal;
     TextView txtInventarioDiesel;
     TextView txtInventarioCorriente;
     TextView txtInventarioExtra;
 
-
-
-    double inventarioTotal = 0;
-    double inventarioDiesel = 0;
-    double inventarioCorriente = 0;
-    double inventarioExtra = 0;
-
+    DatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inventario);
 
+        dbHelper = new DatabaseHelper(this);
+
         spCombustible = findViewById(R.id.spCombustible);
         etCantidad = findViewById(R.id.etCantidad);
         btnAgregar = findViewById(R.id.btnAgregar);
         btnVolver = findViewById(R.id.btnVolver);
+
         txtInventarioTotal = findViewById(R.id.txtInventarioTotal);
         txtInventarioDiesel = findViewById(R.id.txtInventarioDiesel);
         txtInventarioCorriente = findViewById(R.id.txtInventarioCorriente);
@@ -53,39 +49,62 @@ public class InventarioActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spCombustible.setAdapter(adapter);
 
-        btnAgregar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String tipoCombustible = spCombustible.getSelectedItem().toString();
-                String cantidadTexto = etCantidad.getText().toString();
+        actualizarInventariosUI();
 
-                if (!cantidadTexto.isEmpty()) {
-                    double cantidad = Double.parseDouble(cantidadTexto);
+        btnAgregar.setOnClickListener(view -> {
 
-                    if(tipoCombustible.equals("Diesel")){
-                        inventarioDiesel += cantidad;
-                        txtInventarioDiesel.setText("Inventario Diesel: " + inventarioDiesel);
-                    } else if (tipoCombustible.equals("Gasolina")) {
-                        inventarioCorriente += cantidad;
-                        txtInventarioCorriente.setText("Inventario Corriente: " + inventarioCorriente);
-                    } else if (tipoCombustible.equals("Extra")){
-                        inventarioExtra += cantidad;
-                        txtInventarioExtra.setText("Inventario Extra: " + inventarioExtra);
-                    }
-                    inventarioTotal += cantidad;
-                    txtInventarioTotal.setText("Inventario Total: " + inventarioTotal + " galones");
+            String cantidadTexto = etCantidad.getText().toString().trim();
 
-                    etCantidad.setText("");
-                }
+            if (cantidadTexto.isEmpty()) {
+                Toast.makeText(this, "Ingrese cantidad", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            double cantidad = Double.parseDouble(cantidadTexto);
+            String tipo = spCombustible.getSelectedItem().toString();
+
+            double precio = dbHelper.obtenerPrecio(tipo);
+
+            String fecha = new SimpleDateFormat(
+                    "dd/MM/yyyy HH:mm",
+                    Locale.getDefault()
+            ).format(new Date());
+
+            boolean resultado = dbHelper.registrarEntrada(
+                    tipo,
+                    cantidad,
+                    precio,
+                    fecha
+            );
+
+            if (resultado) {
+
+                actualizarInventariosUI();
+
+                etCantidad.setText("");
+
+                Toast.makeText(
+                        this,
+                        "Entrada registrada correctamente",
+                        Toast.LENGTH_SHORT
+                ).show();
             }
         });
 
-        btnVolver.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+        btnVolver.setOnClickListener(view -> finish());
+    }
 
+    private void actualizarInventariosUI() {
+
+        double diesel = dbHelper.obtenerInventario("Diesel");
+        double corriente = dbHelper.obtenerInventario("Corriente");
+        double extra = dbHelper.obtenerInventario("Extra");
+
+        double total = diesel + corriente + extra;
+
+        txtInventarioDiesel.setText("Diesel: " + diesel + " gal");
+        txtInventarioCorriente.setText("Corriente: " + corriente + " gal");
+        txtInventarioExtra.setText("Extra: " + extra + " gal");
+        txtInventarioTotal.setText("Total: " + total + " gal");
     }
 }

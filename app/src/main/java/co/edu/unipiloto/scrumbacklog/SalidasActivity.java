@@ -1,7 +1,6 @@
 package co.edu.unipiloto.scrumbacklog;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -18,7 +17,7 @@ public class SalidasActivity extends AppCompatActivity {
     Button btnRetirar, btnVolver;
     ListView listHistorial;
 
-    double inventarioDisponible = 40000;
+    DatabaseHelper dbHelper;
 
     ArrayList<String> historial = new ArrayList<>();
     ArrayAdapter<String> adapterHistorial;
@@ -28,14 +27,14 @@ public class SalidasActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_salidas);
 
+        dbHelper = new DatabaseHelper(this);
+
         txtInventarioDisponible = findViewById(R.id.txtInventarioDisponible);
         spTipoCombustible = findViewById(R.id.spTipoCombustible);
         etSalida = findViewById(R.id.etSalida);
         btnRetirar = findViewById(R.id.btnRetirar);
         btnVolver = findViewById(R.id.btnVolver);
         listHistorial = findViewById(R.id.listHistorial);
-
-        txtInventarioDisponible.setText(inventarioDisponible + " galones");
 
         String[] tipos = {"Corriente", "Extra", "Diesel"};
 
@@ -48,6 +47,17 @@ public class SalidasActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spTipoCombustible.setAdapter(adapter);
 
+        // Mostrar inventario cuando cambia el tipo
+        spTipoCombustible.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, android.view.View view, int position, long id) {
+                actualizarInventarioUI();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
         adapterHistorial = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_list_item_1,
@@ -56,49 +66,84 @@ public class SalidasActivity extends AppCompatActivity {
 
         listHistorial.setAdapter(adapterHistorial);
 
-        btnRetirar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        btnRetirar.setOnClickListener(view -> {
 
-                String cantidadTexto = etSalida.getText().toString();
+            String cantidadTexto = etSalida.getText().toString().trim();
 
-                if (!cantidadTexto.isEmpty()) {
+            if (cantidadTexto.isEmpty()) {
+                Toast.makeText(this, "Ingrese cantidad", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-                    double galones = Double.parseDouble(cantidadTexto);
-                    String tipo = spTipoCombustible.getSelectedItem().toString();
+            double galones = Double.parseDouble(cantidadTexto);
+            String tipo = spTipoCombustible.getSelectedItem().toString();
+            double precio = obtenerPrecio(tipo);
 
-                    double precio = obtenerPrecio(tipo);
+            // VALIDAR INVENTARIO REAL DESDE BD
+            double inventarioActual = dbHelper.obtenerInventario(tipo);
 
-                    if (galones <= inventarioDisponible) {
+            if (galones > inventarioActual) {
+                Toast.makeText(
+                        this,
+                        "Inventario insuficiente",
+                        Toast.LENGTH_SHORT
+                ).show();
+                return;
+            }
 
-                        inventarioDisponible -= galones;
-                        txtInventarioDisponible.setText(inventarioDisponible + " galones");
+            String fecha = new SimpleDateFormat(
+                    "dd/MM/yyyy HH:mm",
+                    Locale.getDefault()
+            ).format(new Date());
 
-                        double total = galones * precio;
+            boolean resultado = dbHelper.registrarSalida(
+                    tipo,
+                    galones,
+                    precio,
+                    fecha
+            );
 
-                        String fecha = new SimpleDateFormat("dd/MM/yyyy HH:mm",
-                                Locale.getDefault()).format(new Date());
+            if (resultado) {
 
-                        String registro = fecha +
-                                " | " + tipo +
-                                " | " + galones + " gal" +
-                                " | $" + total;
+                double total = galones * precio;
 
-                        historial.add(0, registro);
-                        adapterHistorial.notifyDataSetChanged();
+                String registro = fecha +
+                        " | " + tipo +
+                        " | " + galones + " gal" +
+                        " | $" + total;
 
-                        etSalida.setText("");
+                historial.add(0, registro);
+                adapterHistorial.notifyDataSetChanged();
 
-                    } else {
-                        Toast.makeText(SalidasActivity.this,
-                                "Inventario insuficiente",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                }
+                etSalida.setText("");
+
+                actualizarInventarioUI(); // ACTUALIZA INVENTARIO EN PANTALLA
+
+                Toast.makeText(
+                        this,
+                        "Salida registrada correctamente",
+                        Toast.LENGTH_SHORT
+                ).show();
+
+            } else {
+
+                Toast.makeText(
+                        this,
+                        "Error al registrar",
+                        Toast.LENGTH_SHORT
+                ).show();
             }
         });
 
         btnVolver.setOnClickListener(v -> finish());
+    }
+
+    private void actualizarInventarioUI() {
+
+        String tipo = spTipoCombustible.getSelectedItem().toString();
+        double inventario = dbHelper.obtenerInventario(tipo);
+
+        txtInventarioDisponible.setText(inventario + " galones disponibles");
     }
 
     private double obtenerPrecio(String tipo) {
