@@ -87,6 +87,39 @@ public class ControlInventarioActivity extends AppCompatActivity {
             layoutInventario.addView(tv);
             layoutInventario.addView(pb);
         }
+
+        ArrayList<String> zonas = db.obtenerZonas(filtroUbicacion);
+        for (String zona : zonas) {
+            TextView tvZonaHeader = new TextView(this);
+            tvZonaHeader.setText("Zona: " + zona);
+            tvZonaHeader.setTextSize(16f);
+            tvZonaHeader.setPadding(0, 12, 0, 4);
+            layoutInventario.addView(tvZonaHeader);
+
+            for (String tipo : combustibles) {
+                double cantidad = db.obtenerInventario(tipo, filtroUbicacion, zona);
+
+                TextView tv = new TextView(this);
+                tv.setText(tipo + ": " + cantidad + " galones");
+                tv.setTextSize(14f);
+                tv.setPadding(16, 2, 0, 2);
+
+                ProgressBar pb = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
+                pb.setMax(10000);
+                pb.setProgress((int) cantidad);
+                pb.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 30));
+
+                if (cantidad >= 5000)
+                    pb.getProgressDrawable().setColorFilter(Color.GREEN, android.graphics.PorterDuff.Mode.SRC_IN);
+                else if (cantidad >= 2000)
+                    pb.getProgressDrawable().setColorFilter(Color.YELLOW, android.graphics.PorterDuff.Mode.SRC_IN);
+                else
+                    pb.getProgressDrawable().setColorFilter(Color.RED, android.graphics.PorterDuff.Mode.SRC_IN);
+
+                layoutInventario.addView(tv);
+                layoutInventario.addView(pb);
+            }
+        }
     }
 
     private void mostrarHistorial() {
