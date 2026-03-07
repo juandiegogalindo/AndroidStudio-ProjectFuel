@@ -117,8 +117,6 @@ Su finalidad es académica y de aprendizaje del entorno Android.
 2. Consulta Precio
 
 <img width="390" height="463" alt="image" src="https://github.com/user-attachments/assets/06b9ea22-a372-4bc1-8890-84f9e9ec4423" />
-  
-3. Manejo Inventario.
 
 ---
 
