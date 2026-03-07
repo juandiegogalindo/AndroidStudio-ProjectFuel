@@ -114,10 +114,7 @@ Su finalidad es académica y de aprendizaje del entorno Android.
 
 <img width="390" height="255" alt="image" src="https://github.com/user-attachments/assets/0788faef-176b-4707-b860-fec857f5acc2" />
 
-2. Consulta Precio
-
-<img width="390" height="463" alt="image" src="https://github.com/user-attachments/assets/06b9ea22-a372-4bc1-8890-84f9e9ec4423" />
-
+2. consilta
 ---
 
 ## 8. Autores
