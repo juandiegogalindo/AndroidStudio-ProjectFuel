@@ -123,9 +123,6 @@ Su finalidad es académica y de aprendizaje del entorno Android.
 <img width="393" height="455" alt="image" src="https://github.com/user-attachments/assets/097ece11-c84c-4c11-9906-4f6bccb50fe9" />
 
 4. Manejo salidas
-
-<img width="393" height="484" alt="image" src="https://github.com/user-attachments/assets/ca5b2b95-a7ab-47d4-bdad-8cfd87a98386" />
-
 ---
 
 ## 8. Autores
