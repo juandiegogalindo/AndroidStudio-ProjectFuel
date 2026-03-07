@@ -114,7 +114,6 @@ Su finalidad es académica y de aprendizaje del entorno Android.
 
 <img width="390" height="255" alt="image" src="https://github.com/user-attachments/assets/0788faef-176b-4707-b860-fec857f5acc2" />
 
-2. consilta
 ---
 
 ## 8. Autores
