@@ -109,8 +109,8 @@ Su finalidad es académica y de aprendizaje del entorno Android.
 
 ---
 
-## 8. Autores
-2. Juan Diego Galindo
+## 8. Autor
+1. Juan Diego Galindo
    
 Ingeniería de Sistemas  
 Universidad Piloto de Colombia  
