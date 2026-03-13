@@ -112,7 +112,6 @@ Su finalidad es académica y de aprendizaje del entorno Android.
 ## 8. Autores
 1. Juan Pablo Coronado
 2. Juan Diego Galindo
-3. Sofia Torres Paez
    
 Ingeniería de Sistemas  
 Universidad Piloto de Colombia  
