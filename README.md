@@ -1,7 +1,6 @@
 # PlataformaCombustible-Android
 
 ## 1. Nombre del Proyecto
-**Scrum Backlog Inicial Proyecto Combustibles – Versión Android**
 
 ---
 
