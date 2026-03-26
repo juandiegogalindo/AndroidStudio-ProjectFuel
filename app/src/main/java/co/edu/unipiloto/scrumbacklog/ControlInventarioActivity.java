@@ -1,6 +1,8 @@
 package co.edu.unipiloto.scrumbacklog;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.ViewGroup;
@@ -14,27 +16,48 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import co.edu.unipiloto.scrumbacklog.Spinner.SimpleItemSelected;
+import co.edu.unipiloto.scrumbacklog.database.DAOFactory;
 import co.edu.unipiloto.scrumbacklog.database.DatabaseHelper;
+import co.edu.unipiloto.scrumbacklog.database.dao.CombustibleDAO;
+import co.edu.unipiloto.scrumbacklog.database.dao.InventarioDAO;
+import co.edu.unipiloto.scrumbacklog.database.dao.MovimientoDAO;
+import co.edu.unipiloto.scrumbacklog.database.dao.PrecioDAO;
+import co.edu.unipiloto.scrumbacklog.database.dao.UbicacionDAO;
 
 public class ControlInventarioActivity extends AppCompatActivity {
-
-    private DatabaseHelper db;
+    // XML
     private LinearLayout layoutInventario, layoutHistorial;
     private Spinner spFiltroCombustible, spFiltroUbicacion;
     private Button btnVolver;
-
     private ArrayList<String> ubicaciones;
+
+    // Base DatoS
+    DAOFactory factory;
+    CombustibleDAO combustibleDAO;
+    InventarioDAO inventarioDAO;
+    MovimientoDAO movimientoDAO;
+    PrecioDAO precioDAO;
+    UbicacionDAO ubicacionDAO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_control_inventario);
 
-        db = new DatabaseHelper(this);
+        factory = new DAOFactory(this);
 
+        inventarioDAO = factory.getInventarioDAO();
+        combustibleDAO = factory.getCombustibleDAO();
+        movimientoDAO = factory.getMovimientoDAO();
+        precioDAO = factory.getPrecioDAO();
+        ubicacionDAO = factory.getUbicacionDAO();
+
+        // XML
         btnVolver = findViewById(R.id.btnVolver);
+
         layoutInventario = findViewById(R.id.layoutInventario);
         layoutHistorial = findViewById(R.id.layoutHistorial);
+
         spFiltroCombustible = findViewById(R.id.spFiltroCombustible);
         spFiltroUbicacion = findViewById(R.id.spFiltroUbicacion);
 
@@ -42,7 +65,7 @@ public class ControlInventarioActivity extends AppCompatActivity {
         spFiltroCombustible.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, combustibles));
 
         // 🔥 Validación importante (evita crash si DB viene vacía)
-        ubicaciones = db.obtenerCiudades();
+        ubicaciones = ubicacionDAO.obtenerCiudades();
         if (ubicaciones == null || ubicaciones.isEmpty()) {
             ubicaciones = new ArrayList<>();
             ubicaciones.add("Sin datos");
@@ -79,7 +102,7 @@ public class ControlInventarioActivity extends AppCompatActivity {
         // 🔹 NIVEL GENERAL (POR CIUDAD)
         for (String tipo : combustibles) {
 
-            double cantidad = db.obtenerInventarioTotalPorCiudad(tipo, filtroUbicacion);
+            double cantidad = inventarioDAO.obtenerInventarioTotalPorCiudad(tipo, filtroUbicacion);
 
             TextView tv = new TextView(this);
             tv.setText(tipo + ": " + cantidad + " galones");
@@ -92,7 +115,7 @@ public class ControlInventarioActivity extends AppCompatActivity {
         }
 
         // 🔹 NIVEL POR ZONA
-        ArrayList<String> zonas = db.obtenerZonas(filtroUbicacion);
+        ArrayList<String> zonas = ubicacionDAO.obtenerZonas(filtroUbicacion);
 
         if (zonas == null || zonas.isEmpty()) return;
 
@@ -107,7 +130,7 @@ public class ControlInventarioActivity extends AppCompatActivity {
 
             for (String tipo : combustibles) {
 
-                double cantidad = db.obtenerInventario(tipo, filtroUbicacion, zona);
+                double cantidad = inventarioDAO.obtenerInventario(tipo, filtroUbicacion, zona);
 
                 TextView tv = new TextView(this);
                 tv.setText(tipo + ": " + cantidad + " galones");
@@ -147,7 +170,7 @@ public class ControlInventarioActivity extends AppCompatActivity {
 
         String ubicacion = spFiltroUbicacion.getSelectedItem().toString();
 
-        ArrayList<String> movimientos = db.obtenerMovimientosPorUbicacion(ubicacion);
+        ArrayList<String> movimientos = movimientoDAO.obtenerMovimientosPorUbicacion(ubicacion);
 
         if (movimientos == null) return;
 

@@ -1,5 +1,6 @@
 package co.edu.unipiloto.scrumbacklog;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,17 +10,29 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+import co.edu.unipiloto.scrumbacklog.database.DAOFactory;
 import co.edu.unipiloto.scrumbacklog.database.DatabaseHelper;
+import co.edu.unipiloto.scrumbacklog.database.dao.CombustibleDAO;
+import co.edu.unipiloto.scrumbacklog.database.dao.InventarioDAO;
+import co.edu.unipiloto.scrumbacklog.database.dao.MovimientoDAO;
+import co.edu.unipiloto.scrumbacklog.database.dao.PrecioDAO;
+import co.edu.unipiloto.scrumbacklog.database.dao.UbicacionDAO;
 
 public class SalidasActivity extends AppCompatActivity {
-
+    // XML
     TextView txtInventarioDisponible;
     Spinner spTipoCombustible, spCiudad, spZona;
     EditText etSalida;
     Button btnRetirar, btnVolver;
     ListView listHistorial;
 
-    DatabaseHelper dbHelper;
+    // Base Datos
+    DAOFactory factory;
+    CombustibleDAO combustibleDAO;
+    InventarioDAO inventarioDAO;
+    MovimientoDAO movimientoDAO;
+    PrecioDAO precioDAO;
+    UbicacionDAO ubicacionDAO;
 
     ArrayList<String> historial = new ArrayList<>();
     ArrayAdapter<String> adapterHistorial;
@@ -28,9 +41,15 @@ public class SalidasActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_salidas);
+        // Base Datos
+        factory = new DAOFactory(this);
 
-        dbHelper = new DatabaseHelper(this);
-
+        inventarioDAO = factory.getInventarioDAO();
+        combustibleDAO = factory.getCombustibleDAO();
+        movimientoDAO = factory.getMovimientoDAO();
+        precioDAO = factory.getPrecioDAO();
+        ubicacionDAO = factory.getUbicacionDAO();
+        // XML
         txtInventarioDisponible = findViewById(R.id.txtInventarioDisponible);
         spTipoCombustible = findViewById(R.id.spTipoCombustible);
         spCiudad = findViewById(R.id.spCiudad);
@@ -48,7 +67,7 @@ public class SalidasActivity extends AppCompatActivity {
         spTipoCombustible.setAdapter(adapterTipo);
 
         // Spinner Ciudad
-        ArrayList<String> ciudades = dbHelper.obtenerCiudades();
+        ArrayList<String> ciudades = ubicacionDAO.obtenerCiudades();
         ArrayAdapter<String> adapterCiudad = new ArrayAdapter<>(this,
                 android.R.layout.simple_spinner_item, ciudades);
         adapterCiudad.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -59,7 +78,7 @@ public class SalidasActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, android.view.View view, int position, long id) {
                 String ciudad = spCiudad.getSelectedItem().toString();
-                ArrayList<String> zonas = dbHelper.obtenerZonas(ciudad);
+                ArrayList<String> zonas = ubicacionDAO.obtenerZonas(ciudad);
                 ArrayAdapter<String> adapterZona = new ArrayAdapter<>(SalidasActivity.this,
                         android.R.layout.simple_spinner_item, zonas);
                 adapterZona.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -107,9 +126,9 @@ public class SalidasActivity extends AppCompatActivity {
             String tipo = spTipoCombustible.getSelectedItem().toString();
             String ciudad = spCiudad.getSelectedItem().toString();
             String zona = spZona.getSelectedItem().toString();
-            double precio = dbHelper.obtenerPrecioZona(tipo, ciudad, zona);
+            double precio = precioDAO.obtenerPrecioZona(tipo, ciudad, zona);
 
-            double inventarioActual = dbHelper.obtenerInventario(tipo, ciudad, zona);
+            double inventarioActual = inventarioDAO.obtenerInventario(tipo, ciudad, zona);
             if (galones > inventarioActual) {
                 Toast.makeText(this, "Inventario insuficiente", Toast.LENGTH_SHORT).show();
                 return;
@@ -117,7 +136,7 @@ public class SalidasActivity extends AppCompatActivity {
 
             String fecha = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date());
 
-            boolean resultado = dbHelper.registrarSalida(tipo, galones, precio, fecha, ciudad, zona);
+            boolean resultado = movimientoDAO.registrarSalida(tipo, galones, precio, fecha, ciudad, zona);
 
             if (resultado) {
                 double total = galones * precio;
@@ -141,7 +160,7 @@ public class SalidasActivity extends AppCompatActivity {
         String ciudad = spCiudad.getSelectedItem().toString();
         String zona = spZona.getSelectedItem().toString();
 
-        double inventario = dbHelper.obtenerInventario(tipo, ciudad, zona);
+        double inventario = inventarioDAO.obtenerInventario(tipo, ciudad, zona);
         txtInventarioDisponible.setText(inventario + " galones disponibles");
     }
 }

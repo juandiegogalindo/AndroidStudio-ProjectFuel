@@ -1,5 +1,6 @@
 package co.edu.unipiloto.scrumbacklog;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
@@ -10,7 +11,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+import co.edu.unipiloto.scrumbacklog.database.DAOFactory;
 import co.edu.unipiloto.scrumbacklog.database.DatabaseHelper;
+import co.edu.unipiloto.scrumbacklog.database.dao.CombustibleDAO;
+import co.edu.unipiloto.scrumbacklog.database.dao.InventarioDAO;
+import co.edu.unipiloto.scrumbacklog.database.dao.MovimientoDAO;
+import co.edu.unipiloto.scrumbacklog.database.dao.PrecioDAO;
+import co.edu.unipiloto.scrumbacklog.database.dao.UbicacionDAO;
 
 public class InventarioActivity extends AppCompatActivity {
 
@@ -20,19 +27,34 @@ public class InventarioActivity extends AppCompatActivity {
 
     TextView txtInventarioTotal, txtInventarioDiesel, txtInventarioCorriente, txtInventarioExtra;
 
-    DatabaseHelper dbHelper;
+    // Base Datos
+    DAOFactory factory;
+    CombustibleDAO combustibleDAO;
+    InventarioDAO inventarioDAO;
+    MovimientoDAO movimientoDAO;
+    PrecioDAO precioDAO;
+    UbicacionDAO ubicacionDAO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inventario);
+        // BASE DE DATOS
+        factory = new DAOFactory(this);
 
-        dbHelper = new DatabaseHelper(this);
+        inventarioDAO = factory.getInventarioDAO();
+        combustibleDAO = factory.getCombustibleDAO();
+        movimientoDAO = factory.getMovimientoDAO();
+        precioDAO = factory.getPrecioDAO();
+        ubicacionDAO = factory.getUbicacionDAO();
 
+        // XML
         spCombustible = findViewById(R.id.spCombustible);
         spCiudad = findViewById(R.id.spCiudad);
         spZona = findViewById(R.id.spZona);
+
         etCantidad = findViewById(R.id.etCantidad);
+
         btnAgregar = findViewById(R.id.btnAgregar);
         btnVolver = findViewById(R.id.btnVolver);
 
@@ -93,12 +115,12 @@ public class InventarioActivity extends AppCompatActivity {
         String ciudad = spCiudad.getSelectedItem().toString();
         String zona = spZona.getSelectedItem().toString();
 
-        double precio = dbHelper.obtenerPrecioZona(tipo, ciudad, zona);
+        double precio = precioDAO.obtenerPrecioZona(tipo, ciudad, zona);
 
         String fecha = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
                 .format(new Date());
 
-        boolean resultado = dbHelper.registrarEntrada(tipo, cantidad, precio, fecha, ciudad, zona);
+        boolean resultado = movimientoDAO.registrarEntrada(tipo, cantidad, precio, fecha, ciudad, zona);
 
         if (resultado) {
             actualizarInventariosUI();
@@ -110,7 +132,7 @@ public class InventarioActivity extends AppCompatActivity {
     }
 
     private void cargarCombustiblesSpinner() {
-        ArrayList<String> combustibles = dbHelper.obtenerCombustibles();
+        ArrayList<String> combustibles = combustibleDAO.obtenerCombustibles();
 
         if (combustibles == null || combustibles.isEmpty()) {
             combustibles = new ArrayList<>();
@@ -125,7 +147,7 @@ public class InventarioActivity extends AppCompatActivity {
     }
 
     private void cargarCiudadesSpinner() {
-        ArrayList<String> ciudades = dbHelper.obtenerCiudades();
+        ArrayList<String> ciudades = ubicacionDAO.obtenerCiudades();
 
         if (ciudades == null || ciudades.isEmpty()) {
             ciudades = new ArrayList<>();
@@ -140,7 +162,7 @@ public class InventarioActivity extends AppCompatActivity {
     }
 
     private void cargarZonasSpinner(String ciudad) {
-        ArrayList<String> zonas = dbHelper.obtenerZonas(ciudad);
+        ArrayList<String> zonas = ubicacionDAO.obtenerZonas(ciudad);
 
         if (zonas == null || zonas.isEmpty()) {
             zonas = new ArrayList<>();
@@ -161,9 +183,9 @@ public class InventarioActivity extends AppCompatActivity {
 
         String ciudad = spCiudad.getSelectedItem().toString();
 
-        double diesel = dbHelper.obtenerInventarioTotalPorCiudad("Diesel", ciudad);
-        double corriente = dbHelper.obtenerInventarioTotalPorCiudad("Corriente", ciudad);
-        double extra = dbHelper.obtenerInventarioTotalPorCiudad("Extra", ciudad);
+        double diesel = inventarioDAO.obtenerInventarioTotalPorCiudad("Diesel", ciudad);
+        double corriente = inventarioDAO.obtenerInventarioTotalPorCiudad("Corriente", ciudad);
+        double extra = inventarioDAO.obtenerInventarioTotalPorCiudad("Extra", ciudad);
         double total = diesel + corriente + extra;
 
         txtInventarioDiesel.setText("Diesel: " + diesel + " gal");

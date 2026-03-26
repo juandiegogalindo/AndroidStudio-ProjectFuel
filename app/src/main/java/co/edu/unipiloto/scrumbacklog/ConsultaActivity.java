@@ -5,24 +5,42 @@ import android.view.View;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 
-import co.edu.unipiloto.scrumbacklog.database.DatabaseHelper;
+import co.edu.unipiloto.scrumbacklog.database.DAOFactory;
+import co.edu.unipiloto.scrumbacklog.database.dao.CombustibleDAO;
+import co.edu.unipiloto.scrumbacklog.database.dao.InventarioDAO;
+import co.edu.unipiloto.scrumbacklog.database.dao.MovimientoDAO;
+import co.edu.unipiloto.scrumbacklog.database.dao.PrecioDAO;
+import co.edu.unipiloto.scrumbacklog.database.dao.UbicacionDAO;
 
 public class ConsultaActivity extends AppCompatActivity {
-
+    // XML
     Spinner spTipoCombustible, spCiudad, spZona;
     Button btnCalcular, btnCalcularGalones, btnVolver;
     TextView txtResultado, txtResultadoGalones;
     EditText etGalones;
 
-    DatabaseHelper dbHelper;
+    //Base Datos
+    DAOFactory factory;
+    CombustibleDAO combustibleDAO;
+    InventarioDAO inventarioDAO;
+    MovimientoDAO movimientoDAO;
+    PrecioDAO precioDAO;
+    UbicacionDAO ubicacionDAO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_consulta);
+        // Base Datos
+        factory = new DAOFactory(this);
 
-        dbHelper = new DatabaseHelper(this);
+        inventarioDAO = factory.getInventarioDAO();
+        combustibleDAO = factory.getCombustibleDAO();
+        movimientoDAO = factory.getMovimientoDAO();
+        precioDAO = factory.getPrecioDAO();
+        ubicacionDAO = factory.getUbicacionDAO();
 
+        // XML
         spTipoCombustible = findViewById(R.id.spTipoCombustible);
         spCiudad = findViewById(R.id.spCiudad);
         spZona = findViewById(R.id.spZona);
@@ -39,7 +57,7 @@ public class ConsultaActivity extends AppCompatActivity {
         ArrayAdapter<String> adapterComb = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_spinner_item,
-                dbHelper.obtenerCombustibles()
+                combustibleDAO.obtenerCombustibles()
         );
         adapterComb.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spTipoCombustible.setAdapter(adapterComb);
@@ -48,7 +66,7 @@ public class ConsultaActivity extends AppCompatActivity {
         ArrayAdapter<String> adapterCiudad = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_spinner_item,
-                dbHelper.obtenerCiudades()
+                ubicacionDAO.obtenerCiudades()
         );
         spCiudad.setAdapter(adapterCiudad);
 
@@ -62,7 +80,7 @@ public class ConsultaActivity extends AppCompatActivity {
                 ArrayAdapter<String> adapterZona = new ArrayAdapter<>(
                         ConsultaActivity.this,
                         android.R.layout.simple_spinner_item,
-                        dbHelper.obtenerZonas(ciudad)
+                        ubicacionDAO.obtenerZonas(ciudad)
                 );
 
                 spZona.setAdapter(adapterZona);
@@ -79,7 +97,7 @@ public class ConsultaActivity extends AppCompatActivity {
             String ciudad = spCiudad.getSelectedItem().toString();
             String zona = spZona.getSelectedItem().toString();
 
-            double precio = dbHelper.obtenerPrecioZona(tipo, ciudad, zona);
+            double precio = precioDAO.obtenerPrecioZona(tipo, ciudad, zona);
 
             txtResultado.setText("Precio: $" + precio);
         });
@@ -100,7 +118,7 @@ public class ConsultaActivity extends AppCompatActivity {
             String ciudad = spCiudad.getSelectedItem().toString();
             String zona = spZona.getSelectedItem().toString();
 
-            double precio = dbHelper.obtenerPrecioZona(tipo, ciudad, zona);
+            double precio = precioDAO.obtenerPrecioZona(tipo, ciudad, zona);
             double total = galones * precio;
 
             txtResultadoGalones.setText("Total: $" + total);

@@ -1,12 +1,19 @@
 package co.edu.unipiloto.scrumbacklog;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 
+import co.edu.unipiloto.scrumbacklog.database.DAOFactory;
 import co.edu.unipiloto.scrumbacklog.database.DatabaseHelper;
+import co.edu.unipiloto.scrumbacklog.database.dao.CombustibleDAO;
+import co.edu.unipiloto.scrumbacklog.database.dao.InventarioDAO;
+import co.edu.unipiloto.scrumbacklog.database.dao.MovimientoDAO;
+import co.edu.unipiloto.scrumbacklog.database.dao.PrecioDAO;
+import co.edu.unipiloto.scrumbacklog.database.dao.UbicacionDAO;
 
 public class NotificadorActivity extends AppCompatActivity {
 
@@ -14,20 +21,33 @@ public class NotificadorActivity extends AppCompatActivity {
     Button btnVerificar, btnVolver;
     TextView txtAlerta;
 
-    DatabaseHelper dbHelper;
+    // Base Datos
+    DAOFactory factory;
+    CombustibleDAO combustibleDAO;
+    InventarioDAO inventarioDAO;
+    MovimientoDAO movimientoDAO;
+    PrecioDAO precioDAO;
+    UbicacionDAO ubicacionDAO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notificador);
-
+        // XML
         spCiudad = findViewById(R.id.spCiudad);
         spZona = findViewById(R.id.spZona);
         btnVerificar = findViewById(R.id.btnVerificar);
         btnVolver = findViewById(R.id.btnVolver);
         txtAlerta = findViewById(R.id.txtAlerta);
 
-        dbHelper = new DatabaseHelper(this);
+        // BASE DATOS
+        factory = new DAOFactory(this);
+
+        inventarioDAO = factory.getInventarioDAO();
+        combustibleDAO = factory.getCombustibleDAO();
+        movimientoDAO = factory.getMovimientoDAO();
+        precioDAO = factory.getPrecioDAO();
+        ubicacionDAO = factory.getUbicacionDAO();
 
         cargarCiudadesSpinner();
 
@@ -47,9 +67,9 @@ public class NotificadorActivity extends AppCompatActivity {
             String zona = spZona.getSelectedItem().toString();
 
             // ✅ MÉTODO CORRECTO
-            double diesel = dbHelper.obtenerInventario("Diesel", ciudad, zona);
-            double corriente = dbHelper.obtenerInventario("Corriente", ciudad, zona);
-            double extra = dbHelper.obtenerInventario("Extra", ciudad, zona);
+            double diesel = inventarioDAO.obtenerInventario("Diesel", ciudad, zona);
+            double corriente = inventarioDAO.obtenerInventario("Corriente", ciudad, zona);
+            double extra = inventarioDAO.obtenerInventario("Extra", ciudad, zona);
 
             String mensaje = "";
 
@@ -76,14 +96,14 @@ public class NotificadorActivity extends AppCompatActivity {
     }
 
     private void cargarCiudadesSpinner() {
-        ArrayList<String> ciudades = dbHelper.obtenerCiudades();
+        ArrayList<String> ciudades = ubicacionDAO.obtenerCiudades();
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, ciudades);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spCiudad.setAdapter(adapter);
     }
 
     private void cargarZonasSpinner(String ciudad) {
-        ArrayList<String> zonas = dbHelper.obtenerZonas(ciudad);
+        ArrayList<String> zonas = ubicacionDAO.obtenerZonas(ciudad);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, zonas);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spZona.setAdapter(adapter);

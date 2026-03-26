@@ -10,29 +10,53 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import co.edu.unipiloto.scrumbacklog.Spinner.SimpleItemSelected;
+import co.edu.unipiloto.scrumbacklog.database.DAOFactory;
 import co.edu.unipiloto.scrumbacklog.database.DatabaseHelper;
+import co.edu.unipiloto.scrumbacklog.database.dao.CombustibleDAO;
+import co.edu.unipiloto.scrumbacklog.database.dao.InventarioDAO;
+import co.edu.unipiloto.scrumbacklog.database.dao.MovimientoDAO;
+import co.edu.unipiloto.scrumbacklog.database.dao.PrecioDAO;
+import co.edu.unipiloto.scrumbacklog.database.dao.UbicacionDAO;
 
 public class ReguladorPreciosActivity extends AppCompatActivity {
-
+    // XML
     private Spinner spCiudad, spZona, spCombustible;
     private TextView txtPrecioActual;
     private EditText etNuevoPrecio;
     private Button btnActualizarPrecio, btnVolver;
 
-    private DatabaseHelper db;
+    // Base Datos
+    DatabaseHelper db;
+    DAOFactory factory;
+    CombustibleDAO combustibleDAO;
+    InventarioDAO inventarioDAO;
+    MovimientoDAO movimientoDAO;
+    PrecioDAO precioDAO;
+    UbicacionDAO ubicacionDAO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_regulador_precios);
-
+        // Base Datos
         db = new DatabaseHelper(this);
+        factory = new DAOFactory(this);
 
+        inventarioDAO = factory.getInventarioDAO();
+        combustibleDAO = factory.getCombustibleDAO();
+        movimientoDAO = factory.getMovimientoDAO();
+        precioDAO = factory.getPrecioDAO();
+        ubicacionDAO = factory.getUbicacionDAO();
+
+        // XML
         spCiudad = findViewById(R.id.spCiudad);
         spZona = findViewById(R.id.spZona);
         spCombustible = findViewById(R.id.spCombustible);
+
         txtPrecioActual = findViewById(R.id.txtPrecioActual);
+
         etNuevoPrecio = findViewById(R.id.etNuevoPrecio);
+
         btnActualizarPrecio = findViewById(R.id.btnActualizarPrecio);
         btnVolver = findViewById(R.id.btnVolver);
 
@@ -63,7 +87,7 @@ public class ReguladorPreciosActivity extends AppCompatActivity {
         String zona = spZona.getSelectedItem().toString();
         String combustible = spCombustible.getSelectedItem().toString();
 
-        double precio = db.obtenerPrecioZona(combustible, ciudad, zona);
+        double precio = precioDAO.obtenerPrecioZona(combustible, ciudad, zona);
 
         if(precio > 0){
             txtPrecioActual.setText("Precio actual: $" + precio);
