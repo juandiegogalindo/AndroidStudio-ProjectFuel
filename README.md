@@ -1,15 +1,26 @@
 # PlataformaCombustible-Android
 
-## 1. Nombre del Proyecto
-**Scrum Backlog Inicial Proyecto Combustibles – Versión Android**
+## 1. Nombre del Proyecto: Fuel Project
 
 ---
 
 ## 2. Descripción General
-El sistema simula funcionalidades básicas asociadas a la administración de inventario, registro de salidas y consulta de precios de combustible, tomando como referencia el contexto normativo del sector energético en Colombia.
+El sistema permite registrar y controlar las entradas y salidas de combustible, así como visualizar el estado actual del inventario mediante indicadores gráficos que facilitan el monitoreo de los niveles disponibles.
 
-El proyecto representa una primera aproximación a la capa de presentación (Frontend móvil) de una arquitectura mayor.
+La aplicación implementa una estructura basada en historias de usuario y sigue principios de organización modular en el código, integrando una base de datos local para el almacenamiento y consulta de la información. Además, el sistema permite filtrar los datos por tipo de combustible, ciudad y zona, lo cual facilita la administración del inventario en diferentes ubicaciones.
 
+Entre las funcionalidades principales del sistema se incluyen:
+
+- Registro de entradas de combustible al inventario.
+- Registro de salidas de combustible asociadas a solicitudes o despachos.
+- Visualización del inventario general por ciudad.
+- Visualización del inventario detallado por zonas dentro de cada ciudad.
+- Representación gráfica de los niveles de combustible mediante barras de progreso, permitiendo identificar niveles altos, medios o bajos de disponibilidad.
+- Consulta del historial de movimientos realizados en el sistema.
+
+El desarrollo se realizó utilizando Android Studio, lenguaje Java, interfaz gráfica con ConstraintLayout y almacenamiento mediante SQLite para la gestión de datos locales.
+
+Este proyecto forma parte del proceso académico de desarrollo de aplicaciones móviles, aplicando conceptos de diseño de interfaces, gestión de bases de datos, control de inventarios y organización de software en Android.
 ---
 
 ## 3. Objetivo
@@ -93,35 +104,6 @@ Su finalidad es académica y de aprendizaje del entorno Android.
 1. Clonar repositorio: https://github.com/juandiegogalindo/AndroidStudio-ActividadScrum.git
 2. Abrir en Android Studio.
 3. Sincronizar Gradle.
-4. Ejecutar en emulador o dispositivo físico.
-
----
-
-## 8. Imagenes de Referencia.
-1. Pagina Principal
-
-<img width="390" height="255" alt="image" src="https://github.com/user-attachments/assets/0788faef-176b-4707-b860-fec857f5acc2" />
-
-2. Consulta Precio
-
-<img width="390" height="463" alt="image" src="https://github.com/user-attachments/assets/06b9ea22-a372-4bc1-8890-84f9e9ec4423" />
-  
-3. Manejo Inventario.
-
-<img width="393" height="455" alt="image" src="https://github.com/user-attachments/assets/097ece11-c84c-4c11-9906-4f6bccb50fe9" />
-
-4. Manejo salidas
-
-<img width="393" height="484" alt="image" src="https://github.com/user-attachments/assets/ca5b2b95-a7ab-47d4-bdad-8cfd87a98386" />
-
----
-
-## 8. Autores
-1. Juan Pablo Coronado
-2. Juan Diego Galindo
-3. Sofia Torres Paez
-   
-Ingeniería de Sistemas  
-Universidad Piloto de Colombia  
+4. Ejecutar en emulador 
 
 ---
