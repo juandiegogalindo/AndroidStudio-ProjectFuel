@@ -1,6 +1,7 @@
 package co.edu.unipiloto.scrumbacklog;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,7 +9,7 @@ import co.edu.unipiloto.scrumbacklog.database.DatabaseHelper;
 
 public class ConsultaActivity extends AppCompatActivity {
 
-    Spinner spTipoCombustible;
+    Spinner spTipoCombustible, spCiudad, spZona;
     Button btnCalcular, btnCalcularGalones, btnVolver;
     TextView txtResultado, txtResultadoGalones;
     EditText etGalones;
@@ -23,6 +24,9 @@ public class ConsultaActivity extends AppCompatActivity {
         dbHelper = new DatabaseHelper(this);
 
         spTipoCombustible = findViewById(R.id.spTipoCombustible);
+        spCiudad = findViewById(R.id.spCiudad);
+        spZona = findViewById(R.id.spZona);
+
         btnCalcular = findViewById(R.id.btnCalcular);
         btnVolver = findViewById(R.id.btnVolver);
         btnCalcularGalones = findViewById(R.id.calcularGalones);
@@ -31,25 +35,56 @@ public class ConsultaActivity extends AppCompatActivity {
         txtResultadoGalones = findViewById(R.id.txtResultadoGalones);
         txtResultado = findViewById(R.id.txtResultado);
 
-        String[] tipos = {"Corriente", "Extra", "Diesel"};
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+        // ================= COMBUSTIBLES =================
+        ArrayAdapter<String> adapterComb = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_spinner_item,
-                tipos
+                dbHelper.obtenerCombustibles()
         );
+        adapterComb.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spTipoCombustible.setAdapter(adapterComb);
 
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spTipoCombustible.setAdapter(adapter);
+        // ================= CIUDADES =================
+        ArrayAdapter<String> adapterCiudad = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                dbHelper.obtenerCiudades()
+        );
+        spCiudad.setAdapter(adapterCiudad);
 
+        // ================= ZONAS DINÁMICAS =================
+        spCiudad.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                String ciudad = spCiudad.getSelectedItem().toString();
+
+                ArrayAdapter<String> adapterZona = new ArrayAdapter<>(
+                        ConsultaActivity.this,
+                        android.R.layout.simple_spinner_item,
+                        dbHelper.obtenerZonas(ciudad)
+                );
+
+                spZona.setAdapter(adapterZona);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
+        // ================= BOTÓN PRECIO =================
         btnCalcular.setOnClickListener(view -> {
 
             String tipo = spTipoCombustible.getSelectedItem().toString();
-            double precio = dbHelper.obtenerPrecio(tipo);
+            String ciudad = spCiudad.getSelectedItem().toString();
+            String zona = spZona.getSelectedItem().toString();
 
-            txtResultado.setText("Precio actual: $" + precio);
+            double precio = dbHelper.obtenerPrecioZona(tipo, ciudad, zona);
+
+            txtResultado.setText("Precio: $" + precio);
         });
 
+        // ================= BOTÓN TOTAL =================
         btnCalcularGalones.setOnClickListener(view -> {
 
             String galonesTexto = etGalones.getText().toString().trim();
@@ -60,9 +95,12 @@ public class ConsultaActivity extends AppCompatActivity {
             }
 
             double galones = Double.parseDouble(galonesTexto);
-            String tipo = spTipoCombustible.getSelectedItem().toString();
 
-            double precio = dbHelper.obtenerPrecio(tipo);
+            String tipo = spTipoCombustible.getSelectedItem().toString();
+            String ciudad = spCiudad.getSelectedItem().toString();
+            String zona = spZona.getSelectedItem().toString();
+
+            double precio = dbHelper.obtenerPrecioZona(tipo, ciudad, zona);
             double total = galones * precio;
 
             txtResultadoGalones.setText("Total: $" + total);

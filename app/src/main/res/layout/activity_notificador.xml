@@ -14,6 +14,7 @@
             android:layout_height="wrap_content"
             android:text="Seleccionar ubicación"
             android:textSize="18sp"
+            android:textStyle="bold"
             android:layout_marginBottom="12dp"/>
 
         <Spinner
@@ -37,15 +38,15 @@
 
         <TextView
             android:id="@+id/txtAlerta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:text="Estado del inventario"
             android:textSize="18sp"
-            android:paddingTop="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:paddingTop="20dp"/>
 
         <Button
             android:id="@+id/btnVolver"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Volver"
             android:layout_marginTop="30dp"/>

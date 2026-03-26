@@ -9,8 +9,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.util.ArrayList;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
+
     private static final String DATABASE_NAME = "combustible.db";
-    private static final int DATABASE_VERSION = 10;
+    private static final int DATABASE_VERSION = 11; // ↑ subir versión
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -25,7 +26,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         "nombre TEXT UNIQUE)"
         );
 
-        // TABLA UBICACION
         db.execSQL(
                 "CREATE TABLE ubicacion (" +
                         "id_ubicacion INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -85,30 +85,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private void insertarDatosIniciales(SQLiteDatabase db) {
 
-        // COMBUSTIBLES
         db.execSQL("INSERT INTO combustible (nombre) VALUES ('Corriente')");
         db.execSQL("INSERT INTO combustible (nombre) VALUES ('Extra')");
         db.execSQL("INSERT INTO combustible (nombre) VALUES ('Diesel')");
 
-        // UBICACIONES
         db.execSQL("INSERT INTO ubicacion (ciudad,zona) VALUES ('Bogota','Suba')");
         db.execSQL("INSERT INTO ubicacion (ciudad,zona) VALUES ('Bogota','Engativa')");
         db.execSQL("INSERT INTO ubicacion (ciudad,zona) VALUES ('Bogota','Centro')");
 
-        // INVENTARIO POR UBICACION
-        db.execSQL("INSERT INTO inventario (id_combustible,id_ubicacion,cantidad) VALUES (1,1,10000)");
-        db.execSQL("INSERT INTO inventario (id_combustible,id_ubicacion,cantidad) VALUES (2,1,8000)");
-        db.execSQL("INSERT INTO inventario (id_combustible,id_ubicacion,cantidad) VALUES (3,1,7500)");
+        // INVENTARIO
+        for(int u = 1; u <= 3; u++){
+            db.execSQL("INSERT INTO inventario VALUES (NULL,1,"+u+",10000)");
+            db.execSQL("INSERT INTO inventario VALUES (NULL,2,"+u+",8000)");
+            db.execSQL("INSERT INTO inventario VALUES (NULL,3,"+u+",7500)");
+        }
 
-        db.execSQL("INSERT INTO inventario (id_combustible,id_ubicacion,cantidad) VALUES (1,2,10000)");
-        db.execSQL("INSERT INTO inventario (id_combustible,id_ubicacion,cantidad) VALUES (2,2,8000)");
-        db.execSQL("INSERT INTO inventario (id_combustible,id_ubicacion,cantidad) VALUES (3,2,7500)");
-
-        db.execSQL("INSERT INTO inventario (id_combustible,id_ubicacion,cantidad) VALUES (1,3,10000)");
-        db.execSQL("INSERT INTO inventario (id_combustible,id_ubicacion,cantidad) VALUES (2,3,8000)");
-        db.execSQL("INSERT INTO inventario (id_combustible,id_ubicacion,cantidad) VALUES (3,3,7500)");
-
-        // PRECIOS POR ZONA
+        // PRECIOS
         db.execSQL("INSERT INTO precio_combustible VALUES (NULL,1,1,16000)");
         db.execSQL("INSERT INTO precio_combustible VALUES (NULL,2,1,22700)");
         db.execSQL("INSERT INTO precio_combustible VALUES (NULL,3,1,13200)");
@@ -122,8 +114,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("INSERT INTO precio_combustible VALUES (NULL,3,3,13000)");
     }
 
-    public ArrayList<String> obtenerCombustibles() {
+    // ================= CONSULTAS =================
 
+    public ArrayList<String> obtenerCombustibles() {
         ArrayList<String> lista = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT nombre FROM combustible", null);
@@ -152,7 +145,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public ArrayList<String> obtenerZonas(String ciudad){
         ArrayList<String> lista = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT zona FROM ubicacion WHERE ciudad=?", new String[]{ciudad});
+        Cursor cursor = db.rawQuery(
+                "SELECT zona FROM ubicacion WHERE ciudad=?",
+                new String[]{ciudad}
+        );
 
         while(cursor.moveToNext()){
             lista.add(cursor.getString(0));
@@ -164,7 +160,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private int obtenerIdCombustible(String nombre){
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT id_combustible FROM combustible WHERE nombre=?", new String[]{nombre});
+        Cursor cursor = db.rawQuery(
+                "SELECT id_combustible FROM combustible WHERE nombre=?",
+                new String[]{nombre}
+        );
 
         if(cursor.moveToFirst()){
             int id = cursor.getInt(0);
@@ -178,7 +177,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private int obtenerIdUbicacion(String ciudad, String zona){
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT id_ubicacion FROM ubicacion WHERE ciudad=? AND zona=?", new String[]{ciudad, zona});
+        Cursor cursor = db.rawQuery(
+                "SELECT id_ubicacion FROM ubicacion WHERE ciudad=? AND zona=?",
+                new String[]{ciudad, zona}
+        );
 
         if(cursor.moveToFirst()){
             int id = cursor.getInt(0);
@@ -188,25 +190,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         cursor.close();
         return -1;
-    }
-
-    public double obtenerPrecio(String tipo){
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(
-                "SELECT precio FROM precio_combustible pc " +
-                        "JOIN combustible c ON pc.id_combustible=c.id_combustible " +
-                        "WHERE c.nombre=? LIMIT 1",
-                new String[]{tipo}
-        );
-
-        if(cursor.moveToFirst()){
-            double precio = cursor.getDouble(0);
-            cursor.close();
-            return precio;
-        }
-
-        cursor.close();
-        return 0;
     }
 
     public double obtenerPrecioZona(String tipo,String ciudad,String zona){
@@ -249,10 +232,38 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return 0;
     }
 
+    // 🔥 CORREGIDO (SUMA POR CIUDAD)
+    public double obtenerInventarioPorCiudad(String tipo, String ciudad){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(
+                "SELECT SUM(i.cantidad) " +
+                        "FROM inventario i " +
+                        "JOIN combustible c ON i.id_combustible=c.id_combustible " +
+                        "JOIN ubicacion u ON i.id_ubicacion=u.id_ubicacion " +
+                        "WHERE c.nombre=? AND u.ciudad=?",
+                new String[]{tipo, ciudad}
+        );
+
+        if(cursor.moveToFirst()){
+            double inv = cursor.getDouble(0);
+            cursor.close();
+            return inv;
+        }
+
+        cursor.close();
+        return 0;
+    }
+
+    // ================= MOVIMIENTOS =================
+
     public boolean registrarEntrada(String tipo,double galones,double precio,String fecha,String ciudad,String zona){
+
         SQLiteDatabase db = this.getWritableDatabase();
         int idComb = obtenerIdCombustible(tipo);
         int idUbic = obtenerIdUbicacion(ciudad,zona);
+
+        if(idComb == -1 || idUbic == -1) return false;
 
         double total = galones * precio;
 
@@ -279,9 +290,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public boolean registrarSalida(String tipo,double galones,double precio,String fecha,String ciudad,String zona){
+
         SQLiteDatabase db = this.getWritableDatabase();
         int idComb = obtenerIdCombustible(tipo);
         int idUbic = obtenerIdUbicacion(ciudad,zona);
+
+        if(idComb == -1 || idUbic == -1) return false;
+
+        double disponible = obtenerInventario(tipo, ciudad, zona);
+
+        if(disponible < galones){
+            return false; // 🔥 evita inventario negativo
+        }
 
         double total = galones * precio;
 
@@ -305,50 +325,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         return false;
-    }
-
-    public double obtenerInventarioPorUbicacion(String tipo, String ciudad){
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.rawQuery(
-                "SELECT i.cantidad " +
-                        "FROM inventario i " +
-                        "JOIN combustible c ON i.id_combustible=c.id_combustible " +
-                        "JOIN ubicacion u ON i.id_ubicacion=u.id_ubicacion " +
-                        "WHERE c.nombre=? AND u.ciudad=?",
-                new String[]{tipo, ciudad}
-        );
-
-        if(cursor.moveToFirst()){
-            double inv = cursor.getDouble(0);
-            cursor.close();
-            return inv;
-        }
-
-        cursor.close();
-        return 0;
-    }
-
-    public double obtenerInventarioPorUbicacionAlerta(String Tipo,String tipo, String ciudad){
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        Cursor cursor = db.rawQuery(
-                "SELECT i.cantidad " +
-                        "FROM inventario i " +
-                        "JOIN combustible c ON i.id_combustible=c.id_combustible " +
-                        "JOIN ubicacion u ON i.id_ubicacion=u.id_ubicacion " +
-                        "WHERE c.nombre=? AND u.ciudad=?",
-                new String[]{tipo, ciudad}
-        );
-
-        if(cursor.moveToFirst()){
-            double inv = cursor.getDouble(0);
-            cursor.close();
-            return inv;
-        }
-
-        cursor.close();
-        return 0;
     }
 
     public ArrayList<String> obtenerMovimientosPorUbicacion(String ciudad){
@@ -377,5 +353,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         cursor.close();
         return lista;
+    }
+
+    public double obtenerInventarioTotalPorCiudad(String tipo, String ciudad){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(
+                "SELECT SUM(i.cantidad) " +
+                        "FROM inventario i " +
+                        "JOIN combustible c ON i.id_combustible=c.id_combustible " +
+                        "JOIN ubicacion u ON i.id_ubicacion=u.id_ubicacion " +
+                        "WHERE c.nombre=? AND u.ciudad=?",
+                new String[]{tipo, ciudad}
+        );
+
+        if(cursor.moveToFirst()){
+            double total = cursor.getDouble(0);
+            cursor.close();
+            return total;
+        }
+
+        cursor.close();
+        return 0;
     }
 }

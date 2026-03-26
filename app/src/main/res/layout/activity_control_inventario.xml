@@ -17,14 +17,12 @@
             android:textStyle="bold"
             android:layout_marginBottom="16dp"/>
 
-        <!-- Spinner para filtrar por combustible -->
         <Spinner
             android:id="@+id/spFiltroCombustible"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"/>
 
-        <!-- Spinner para filtrar por ubicación -->
         <Spinner
             android:id="@+id/spFiltroUbicacion"
             android:layout_width="match_parent"
@@ -42,8 +40,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginBottom="24dp">
-        </LinearLayout>
+            android:layout_marginBottom="24dp"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -55,14 +52,14 @@
             android:id="@+id/layoutHistorial"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-        </LinearLayout>
+            android:orientation="vertical"/>
 
         <Button
             android:id="@+id/btnVolver"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Volver"/>
+            android:text="Volver"
+            android:layout_marginTop="16dp"/>
 
     </LinearLayout>
 </ScrollView>

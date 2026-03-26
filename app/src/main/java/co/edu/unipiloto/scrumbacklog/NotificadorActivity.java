@@ -36,6 +36,7 @@ public class NotificadorActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, android.view.View view, int position, long id) {
                 cargarZonasSpinner(spCiudad.getSelectedItem().toString());
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
         });
@@ -45,25 +46,26 @@ public class NotificadorActivity extends AppCompatActivity {
             String ciudad = spCiudad.getSelectedItem().toString();
             String zona = spZona.getSelectedItem().toString();
 
-            double diesel = dbHelper.obtenerInventarioPorUbicacionAlerta("Diesel", ciudad, zona);
-            double corriente = dbHelper.obtenerInventarioPorUbicacionAlerta("Corriente", ciudad, zona);
-            double extra = dbHelper.obtenerInventarioPorUbicacionAlerta("Extra", ciudad, zona);
+            // ✅ MÉTODO CORRECTO
+            double diesel = dbHelper.obtenerInventario("Diesel", ciudad, zona);
+            double corriente = dbHelper.obtenerInventario("Corriente", ciudad, zona);
+            double extra = dbHelper.obtenerInventario("Extra", ciudad, zona);
 
             String mensaje = "";
 
-            if(diesel < 1000){
+            if (diesel < 1000) {
                 mensaje += "⚠ Diesel en nivel crítico\n";
             }
 
-            if(corriente < 1000){
+            if (corriente < 1000) {
                 mensaje += "⚠ Corriente en nivel crítico\n";
             }
 
-            if(extra < 1000){
+            if (extra < 1000) {
                 mensaje += "⚠ Extra en nivel crítico\n";
             }
 
-            if(mensaje.isEmpty()){
+            if (mensaje.isEmpty()) {
                 mensaje = "Inventario en niveles normales";
             }
 
