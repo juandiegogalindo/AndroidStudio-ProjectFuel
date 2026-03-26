@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "combustible.db";
-    private static final int DATABASE_VERSION = 12; // subir versión (VERSION ACTUAL CON COMMIT 12)
+    private static final int DATABASE_VERSION = 14; // subir versión (VERSION ACTUAL CON COMMIT 12)
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -57,12 +57,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "nombre TEXT UNIQUE)");
 
         db.execSQL("CREATE TABLE usuario (" +
-                "id_usuario INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "nombre TEXT," +
-                "correo TEXT UNIQUE," +
-                "password TEXT," +
-                "id_rol INTEGER," +
-                "FOREIGN KEY(id_rol) REFERENCES rol(id_rol))");
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "nombre TEXT NOT NULL," +
+                "correo TEXT NOT NULL UNIQUE," +
+                "password TEXT NOT NULL," +
+                "rol TEXT NOT NULL," +
+                "verificado INTEGER DEFAULT 0," +
+                "codigo_verificacion TEXT)");
 
         db.execSQL("CREATE TABLE distribuidor (" +
                 "id_distribuidor INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -84,11 +85,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS usuario");
+        db.execSQL("DROP TABLE IF EXISTS rol");
         db.execSQL("DROP TABLE IF EXISTS movimientos");
         db.execSQL("DROP TABLE IF EXISTS inventario");
         db.execSQL("DROP TABLE IF EXISTS precio_combustible");
         db.execSQL("DROP TABLE IF EXISTS ubicacion");
         db.execSQL("DROP TABLE IF EXISTS combustible");
+        db.execSQL("DROP TABLE IF EXISTS distribuidor");
+        db.execSQL("DROP TABLE IF EXISTS pedido");
+        db.execSQL("DROP TABLE IF EXISTS alerta");
 
         onCreate(db);
     }

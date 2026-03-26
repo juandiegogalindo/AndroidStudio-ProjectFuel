@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">ScrumBacklog</string>
+    <string name="seleccionar_rol">Seleccionar rol</string>
 </resources>
