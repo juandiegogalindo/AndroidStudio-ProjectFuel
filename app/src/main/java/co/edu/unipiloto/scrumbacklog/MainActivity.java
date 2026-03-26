@@ -1,13 +1,14 @@
 package co.edu.unipiloto.scrumbacklog;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
-    Button btnConsulta, btnInventario, btnSalidas, btnNotificador, btnRegulador, btnControl;
+    Button btnConsulta, btnInventario, btnSalidas, btnNotificador, btnRegulador, btnControl, btnCerrarSesion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
         btnNotificador = findViewById(R.id.btnNotificador);
         btnRegulador = findViewById(R.id.btnRegulador);
         btnControl = findViewById(R.id.btnControl);
+        btnCerrarSesion = findViewById(R.id.btnCerrarSesion);
 
         btnConsulta.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,5 +70,14 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-    }
+
+        btnCerrarSesion.setOnClickListener(view -> {
+            SharedPreferences prefs = getSharedPreferences("sesion", MODE_PRIVATE);
+            prefs.edit().clear().apply();
+
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        });
+        }
 }
