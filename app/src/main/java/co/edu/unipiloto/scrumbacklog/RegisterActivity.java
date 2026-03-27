@@ -44,7 +44,7 @@ public class RegisterActivity extends AppCompatActivity {
         usuarioDAO = new UsuarioDAO(databaseHelper);
 
         // Spinner
-        String[] roles = {"Distribuidor", "Vendedor", "Usuario"};
+        String[] roles = {"Administrador","Distribuidor", "Vendedor", "Usuario"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, roles);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerRol.setAdapter(adapter);

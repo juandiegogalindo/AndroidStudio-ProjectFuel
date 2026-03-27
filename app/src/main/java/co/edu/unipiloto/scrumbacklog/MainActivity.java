@@ -8,7 +8,8 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
-    Button btnConsulta, btnInventario, btnSalidas, btnNotificador, btnRegulador, btnControl, btnCerrarSesion;
+    Button btnConsulta, btnInventario, btnSalidas, btnNotificador, btnRegulador, btnControl,
+            btnCerrarSesion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
         btnSalidas.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
             SharedPreferences prefs = getSharedPreferences("sesion", MODE_PRIVATE);
             prefs.edit().clear().apply();
 
-            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            Intent intent = new Intent(MainActivity.this, LoginScreenActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         });

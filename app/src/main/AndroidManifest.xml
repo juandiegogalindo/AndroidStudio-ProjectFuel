@@ -11,11 +11,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ScrumBacklog">
-
+        <activity
+            android:name=".ConsultaInventarioActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ConsultaInventario"
+            android:exported="false" />
+        <activity
+            android:name=".IngresoInventarioActivity"
+            android:exported="false" />
         <activity
             android:name=".LoginActivity"
-            android:exported="false" />
-        <!-- Pantalla inicial: Login / Registro -->
+            android:exported="false" /> <!-- Pantalla inicial: Login / Registro -->
         <activity
             android:name=".LoginScreenActivity"
             android:exported="true">
