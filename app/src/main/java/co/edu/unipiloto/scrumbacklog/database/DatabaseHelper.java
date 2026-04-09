@@ -5,8 +5,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    private static final String DATABASE_NAME = "combustible.db";
-    private static final int DATABASE_VERSION = 14; // subir versión (VERSION ACTUAL CON COMMIT 12)
+
+    private static final String DATABASE_NAME = "app.db";
+    private static final int DATABASE_VERSION = 16;
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -59,9 +60,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE usuario (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "nombre TEXT NOT NULL," +
+                "usuario TEXT NOT NULL," +
                 "correo TEXT NOT NULL UNIQUE," +
+                "direccion TEXT," +
                 "password TEXT NOT NULL," +
                 "rol TEXT NOT NULL," +
+                "fecha_nacimiento TEXT," +
+                "genero TEXT," +
+                "latitud REAL," +
+                "longitud REAL," +
                 "verificado INTEGER DEFAULT 0," +
                 "codigo_verificacion TEXT)");
 

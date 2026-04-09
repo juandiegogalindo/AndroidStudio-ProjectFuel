@@ -28,6 +28,22 @@
             android:padding="12dp"/>
 
         <EditText
+            android:id="@+id/etUsuario"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Usuario"
+            android:inputType="textPersonName"
+            android:padding="12dp"/>
+
+        <EditText
+            android:id="@+id/etDireccion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Direccion Fisica"
+            android:inputType="textPersonName"
+            android:padding="12dp"/>
+
+        <EditText
             android:id="@+id/etCorreo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -53,6 +69,36 @@
             android:inputType="textPassword"
             android:padding="12dp"
             android:layout_marginTop="12dp"/>
+
+        <EditText
+            android:id="@+id/etFecha"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Fecha de nacimiento (yyyy-MM-dd)"
+            android:inputType="date"
+            android:padding="12dp"
+            android:layout_marginTop="12dp"/>
+
+        <!-- ✅ RADIOGROUP GENERO -->
+        <RadioGroup
+            android:id="@+id/rgGenero"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rbMasculino"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Masculino"/>
+
+            <RadioButton
+                android:id="@+id/rbFemenino"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Femenino"/>
+        </RadioGroup>
 
         <Spinner
             android:id="@+id/spinnerRol"
