@@ -10,6 +10,9 @@ public class Usuario {
     private String password;
     private String rol;
 
+    // 🔥 NUEVO: RELACIÓN CON ESTACIÓN
+    private int idUbicacion;
+
     private String fechaNacimiento;
     private String genero;
     private double latitud;
@@ -21,7 +24,7 @@ public class Usuario {
     public Usuario() {}
 
     public Usuario(String nombre, String usuario, String correo, String direccion,
-                   String password, String rol,
+                   String password, String rol, int idUbicacion,
                    String fechaNacimiento, String genero,
                    double latitud, double longitud,
                    int verificado, String codigoVerificacion) {
@@ -32,6 +35,7 @@ public class Usuario {
         this.direccion = direccion;
         this.password = password;
         this.rol = rol;
+        this.idUbicacion = idUbicacion;
         this.fechaNacimiento = fechaNacimiento;
         this.genero = genero;
         this.latitud = latitud;
@@ -48,6 +52,7 @@ public class Usuario {
     public String getDireccion() { return direccion; }
     public String getPassword() { return password; }
     public String getRol() { return rol; }
+    public int getIdUbicacion() { return idUbicacion; }
     public String getFechaNacimiento() { return fechaNacimiento; }
     public String getGenero() { return genero; }
     public double getLatitud() { return latitud; }
@@ -55,7 +60,7 @@ public class Usuario {
     public int getVerificado() { return verificado; }
     public String getCodigoVerificacion() { return codigoVerificacion; }
 
-    // SETTERS (ESTO ERA LO QUE TE FALTABA)
+    // SETTERS
     public void setId(int id) { this.id = id; }
     public void setNombre(String nombre) { this.nombre = nombre; }
     public void setUsuario(String usuario) { this.usuario = usuario; }
@@ -63,6 +68,7 @@ public class Usuario {
     public void setDireccion(String direccion) { this.direccion = direccion; }
     public void setPassword(String password) { this.password = password; }
     public void setRol(String rol) { this.rol = rol; }
+    public void setIdUbicacion(int idUbicacion) { this.idUbicacion = idUbicacion; }
     public void setFechaNacimiento(String fechaNacimiento) { this.fechaNacimiento = fechaNacimiento; }
     public void setGenero(String genero) { this.genero = genero; }
     public void setLatitud(double latitud) { this.latitud = latitud; }

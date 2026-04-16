@@ -29,4 +29,22 @@ public class PrecioDAO {
         cursor.close();
         return 0;
     }
+
+    public double obtenerPrecioPorUbicacion(String tipo, int idUbicacion){
+        Cursor cursor = db.rawQuery(
+                "SELECT precio FROM precio_combustible pc " +
+                        "JOIN combustible c ON pc.id_combustible=c.id_combustible " +
+                        "WHERE c.nombre=? AND pc.id_ubicacion=?",
+                new String[]{tipo, String.valueOf(idUbicacion)}
+        );
+
+        if(cursor.moveToFirst()){
+            double precio = cursor.getDouble(0);
+            cursor.close();
+            return precio;
+        }
+
+        cursor.close();
+        return 0;
+    }
 }

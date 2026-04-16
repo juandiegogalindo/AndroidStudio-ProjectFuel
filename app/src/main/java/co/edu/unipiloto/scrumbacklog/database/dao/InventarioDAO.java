@@ -116,4 +116,64 @@ public class InventarioDAO {
 
         return lista;
     }
+
+    // 🔥 NUEVO MÉTODO (por usuario)
+    public double obtenerInventarioPorUbicacion(String tipo, int idUbicacion){
+
+        Cursor cursor = null;
+        double resultado = 0;
+
+        try {
+            cursor = db.rawQuery(
+                    "SELECT cantidad FROM inventario i " +
+                            "JOIN combustible c ON i.id_combustible=c.id_combustible " +
+                            "WHERE c.nombre=? AND i.id_ubicacion=?",
+                    new String[]{tipo, String.valueOf(idUbicacion)}
+            );
+
+            if(cursor.moveToFirst()){
+                resultado = cursor.getDouble(0);
+            }
+
+        } finally {
+            if(cursor != null) cursor.close();
+        }
+
+        return resultado;
+    }
+
+    public List<String> obtenerHistorialPorUbicacion(int idUbicacion) {
+
+        List<String> lista = new ArrayList<>();
+        Cursor cursor = null;
+
+        try {
+            cursor = db.rawQuery(
+                    "SELECT i.cantidad, c.nombre, u.ciudad, u.zona " +
+                            "FROM inventario i " +
+                            "JOIN combustible c ON i.id_combustible=c.id_combustible " +
+                            "JOIN ubicacion u ON i.id_ubicacion=u.id_ubicacion " +
+                            "WHERE i.id_ubicacion=? " +
+                            "ORDER BY i.id_inventario DESC",
+                    new String[]{String.valueOf(idUbicacion)}
+            );
+
+            if (cursor.moveToFirst()) {
+                do {
+                    int cantidad = cursor.getInt(0);
+                    String combustible = cursor.getString(1);
+                    String ciudad = cursor.getString(2);
+                    String zona = cursor.getString(3);
+
+                    lista.add("+" + cantidad + " | " + combustible + " | " + ciudad + " - " + zona);
+
+                } while (cursor.moveToNext());
+            }
+
+        } finally {
+            if (cursor != null) cursor.close();
+        }
+
+        return lista;
+    }
 }

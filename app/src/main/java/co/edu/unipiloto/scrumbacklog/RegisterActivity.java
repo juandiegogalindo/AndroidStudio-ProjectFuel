@@ -1,6 +1,8 @@
 package co.edu.unipiloto.scrumbacklog;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.widget.*;
@@ -15,127 +17,151 @@ import co.edu.unipiloto.scrumbacklog.model.Usuario;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private EditText etNombre, etUsuario, etCorreo, etDireccion, etPassword, etConfirm, etFecha;
-    private RadioGroup rgGenero;
-    private Spinner spinnerRol;
-    private Button btnRegistrar, btnVolver;
+    EditText etNombre, etUsuario, etDireccion, etCorreo, etPassword, etPasswordConfirm, etFecha;
+    RadioGroup rgGenero;
+    Spinner spinnerEstacion;
+    Button btnRegistrar, btnVolver;
 
-    private UsuarioDAO usuarioDAO;
+    DatabaseHelper dbHelper;
+    SQLiteDatabase db;
+
+    UsuarioDAO usuarioDAO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        // ✅ CORRECCIÓN CLAVE: crear DatabaseHelper
-        DatabaseHelper dbHelper = new DatabaseHelper(this);
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        dbHelper = new DatabaseHelper(this);
+        db = dbHelper.getWritableDatabase();
+
         usuarioDAO = new UsuarioDAO(dbHelper);
 
+        // Referencias
         etNombre = findViewById(R.id.etNombre);
         etUsuario = findViewById(R.id.etUsuario);
-        etCorreo = findViewById(R.id.etCorreo);
         etDireccion = findViewById(R.id.etDireccion);
+        etCorreo = findViewById(R.id.etCorreo);
         etPassword = findViewById(R.id.etPassword);
-        etConfirm = findViewById(R.id.etPasswordConfirm);
+        etPasswordConfirm = findViewById(R.id.etPasswordConfirm);
         etFecha = findViewById(R.id.etFecha);
+
         rgGenero = findViewById(R.id.rgGenero);
-        spinnerRol = findViewById(R.id.spinnerRol);
+        spinnerEstacion = findViewById(R.id.spinnerEstacion);
+
         btnRegistrar = findViewById(R.id.btnRegistrar);
         btnVolver = findViewById(R.id.btnVolver);
-        String[] roles = {"Administrador","Distribuidor", "Vendedor", "Usuario"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, roles);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerRol.setAdapter(adapter);
 
-        btnRegistrar.setOnClickListener(v -> registrar());
+        cargarEstaciones();
+
+        btnRegistrar.setOnClickListener(v -> registrarUsuario());
         btnVolver.setOnClickListener(v -> finish());
     }
 
-    private void registrar() {
+    // =========================
+    // CARGAR ESTACIONES
+    // =========================
+    private void cargarEstaciones() {
+
+        ArrayList<String> estaciones = new ArrayList<>();
+
+        Cursor cursor = db.rawQuery("SELECT nombre FROM ubicacion", null);
+
+        while (cursor.moveToNext()) {
+            estaciones.add(cursor.getString(0));
+        }
+        cursor.close();
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, estaciones);
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerEstacion.setAdapter(adapter);
+    }
+
+    // =========================
+    // REGISTRAR USUARIO
+    // =========================
+    private void registrarUsuario() {
 
         String nombre = etNombre.getText().toString().trim();
-        String usuario = etUsuario.getText().toString().trim();
-        String correo = etCorreo.getText().toString().trim();
+        String usuarioTxt = etUsuario.getText().toString().trim();
         String direccion = etDireccion.getText().toString().trim();
+        String correo = etCorreo.getText().toString().trim().toLowerCase();
         String password = etPassword.getText().toString().trim();
-        String confirm = etConfirm.getText().toString().trim();
+        String confirm = etPasswordConfirm.getText().toString().trim();
         String fecha = etFecha.getText().toString().trim();
-        String rol = spinnerRol.getSelectedItem().toString();
 
-        // Validación básica
-        if (nombre.isEmpty() || usuario.isEmpty() || correo.isEmpty() ||
-                direccion.isEmpty() || password.isEmpty() || confirm.isEmpty() || fecha.isEmpty()) {
+        if (nombre.isEmpty() || usuarioTxt.isEmpty() || correo.isEmpty()
+                || password.isEmpty() || confirm.isEmpty()) {
+
             Toast.makeText(this, "Complete todos los campos", Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (!password.equals(confirm)) {
-            etConfirm.setError("Contraseñas no coinciden");
+            Toast.makeText(this, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (!esMayorDeEdad(fecha)) {
-            Toast.makeText(this, "Debe ser mayor de edad", Toast.LENGTH_SHORT).show();
+        if (spinnerEstacion.getSelectedItem() == null) {
+            Toast.makeText(this, "Seleccione estación", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        int generoId = rgGenero.getCheckedRadioButtonId();
-        if (generoId == -1) {
-            Toast.makeText(this, "Seleccione género", Toast.LENGTH_SHORT).show();
-            return;
+        // 🔹 Genero
+        int selectedId = rgGenero.getCheckedRadioButtonId();
+        String genero = "";
+
+        if (selectedId != -1) {
+            RadioButton rb = findViewById(selectedId);
+            genero = rb.getText().toString();
         }
 
-        String genero = ((RadioButton) findViewById(generoId)).getText().toString();
+        // 🔹 Obtener ID estación
+        String nombreEstacion = spinnerEstacion.getSelectedItem().toString();
 
-        // Coordenadas por defecto (puedes luego usar GPS)
-        double lat = 4.6097;
-        double lon = -74.0817;
-
-        Usuario u = new Usuario(
-                nombre, usuario, correo, direccion,
-                password, rol,
-                fecha, genero,
-                lat, lon,
-                0, generarCodigo() // ✅ usar método correcto
+        Cursor cursor = db.rawQuery(
+                "SELECT id_ubicacion FROM ubicacion WHERE nombre=?",
+                new String[]{nombreEstacion}
         );
 
-        long res = usuarioDAO.insertarUsuario(u);
+        int idUbicacion = -1;
 
-        if (res > 0) {
-            Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(this, LoginActivity.class));
+        if (cursor.moveToFirst()) {
+            idUbicacion = cursor.getInt(0);
+        }
+        cursor.close();
+
+        if (idUbicacion == -1) {
+            Toast.makeText(this, "Error con la estación", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // 🔥 ROL CORRECTO (CONSISTENTE)
+        String rol = "CLIENTE";
+
+        // 🔥 CREAR OBJETO USUARIO
+        Usuario nuevo = new Usuario();
+        nuevo.setNombre(nombre);
+        nuevo.setUsuario(usuarioTxt);
+        nuevo.setCorreo(correo);
+        nuevo.setDireccion(direccion);
+        nuevo.setPassword(password);
+        nuevo.setRol(rol);
+        nuevo.setIdUbicacion(idUbicacion);
+        nuevo.setFechaNacimiento(fecha);
+        nuevo.setGenero(genero);
+        nuevo.setVerificado(1); // opcional
+
+        // 🔥 USAR DAO
+        long resultado = usuarioDAO.insertarUsuario(nuevo);
+
+        if (resultado != -1) {
+            Toast.makeText(this, "Usuario registrado correctamente", Toast.LENGTH_SHORT).show();
             finish();
         } else {
-            Toast.makeText(this, "Error en registro", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Error al registrar", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private boolean esMayorDeEdad(String fecha) {
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-            Date f = sdf.parse(fecha);
-
-            Calendar hoy = Calendar.getInstance();
-            Calendar nac = Calendar.getInstance();
-            nac.setTime(f);
-
-            int edad = hoy.get(Calendar.YEAR) - nac.get(Calendar.YEAR);
-
-            // Ajuste por mes/día (más preciso)
-            if (hoy.get(Calendar.DAY_OF_YEAR) < nac.get(Calendar.DAY_OF_YEAR)) {
-                edad--;
-            }
-
-            return edad >= 18;
-
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    private String generarCodigo() {
-        Random r = new Random();
-        return String.valueOf(100000 + r.nextInt(900000));
     }
 }

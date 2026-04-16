@@ -30,6 +30,10 @@ public class UsuarioDAO {
             values.put("direccion", usuario.getDireccion());
             values.put("password", usuario.getPassword());
             values.put("rol", usuario.getRol());
+
+            // 🔥 CLAVE: GUARDAR ESTACIÓN
+            values.put("id_ubicacion", usuario.getIdUbicacion());
+
             values.put("fecha_nacimiento", usuario.getFechaNacimiento());
             values.put("genero", usuario.getGenero());
             values.put("latitud", usuario.getLatitud());
@@ -66,7 +70,7 @@ public class UsuarioDAO {
     }
 
     // ==============================
-    // LOGIN POR CORREO (TU MÉTODO ORIGINAL)
+    // LOGIN POR CORREO
     // ==============================
     public boolean validarLogin(String correo, String password) {
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
@@ -85,7 +89,7 @@ public class UsuarioDAO {
     }
 
     // ==============================
-    // 🔥 AGREGADO: LOGIN POR USUARIO
+    // LOGIN POR USUARIO
     // ==============================
     public boolean loginPorUsuario(String usuario, String password) {
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
@@ -104,7 +108,7 @@ public class UsuarioDAO {
     }
 
     // ==============================
-    // 🔥 AGREGADO: OBTENER ROL
+    // OBTENER ROL
     // ==============================
     public String obtenerRol(String correo) {
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
@@ -128,7 +132,7 @@ public class UsuarioDAO {
     }
 
     // ==============================
-    // 🔥 AGREGADO: OBTENER USUARIO COMPLETO
+    // 🔥 OBTENER USUARIO COMPLETO
     // ==============================
     public Usuario obtenerUsuario(String correo) {
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
@@ -151,6 +155,10 @@ public class UsuarioDAO {
                 usuario.setDireccion(cursor.getString(cursor.getColumnIndexOrThrow("direccion")));
                 usuario.setPassword(cursor.getString(cursor.getColumnIndexOrThrow("password")));
                 usuario.setRol(cursor.getString(cursor.getColumnIndexOrThrow("rol")));
+
+                // 🔥 CLAVE: CARGAR ESTACIÓN
+                usuario.setIdUbicacion(cursor.getInt(cursor.getColumnIndexOrThrow("id_ubicacion")));
+
                 usuario.setFechaNacimiento(cursor.getString(cursor.getColumnIndexOrThrow("fecha_nacimiento")));
                 usuario.setGenero(cursor.getString(cursor.getColumnIndexOrThrow("genero")));
                 usuario.setLatitud(cursor.getDouble(cursor.getColumnIndexOrThrow("latitud")));
@@ -164,5 +172,53 @@ public class UsuarioDAO {
         }
 
         return usuario;
+    }
+
+    // ==============================
+    // (OPCIONAL) OBTENER ID UBICACION
+    // ==============================
+    public int obtenerIdUbicacion(String correo){
+        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery(
+                "SELECT id_ubicacion FROM usuario WHERE correo=?",
+                new String[]{correo}
+        );
+
+        if(cursor.moveToFirst()){
+            int id = cursor.getInt(0);
+            cursor.close();
+            return id;
+        }
+
+        cursor.close();
+        return -1;
+    }
+
+    // ==============================
+// 🔥 OBTENER UBICACIÓN DEL USUARIO
+// ==============================
+    public String[] obtenerUbicacionUsuario(int idUbicacion) {
+
+        SQLiteDatabase db = databaseHelper.getReadableDatabase();
+        Cursor cursor = null;
+
+        try {
+            cursor = db.rawQuery(
+                    "SELECT ciudad, zona FROM ubicacion WHERE id_ubicacion = ?",
+                    new String[]{String.valueOf(idUbicacion)}
+            );
+
+            if (cursor.moveToFirst()) {
+                String ciudad = cursor.getString(0);
+                String zona = cursor.getString(1);
+
+                return new String[]{ciudad, zona};
+            }
+
+        } finally {
+            if (cursor != null) cursor.close();
+        }
+
+        return null;
     }
 }

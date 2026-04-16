@@ -9,8 +9,8 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <!-- Título -->
         <TextView
-            android:id="@+id/tvRegistroTitulo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Registro de Usuario"
@@ -19,72 +19,77 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="24dp"/>
 
+        <!-- Nombre -->
         <EditText
             android:id="@+id/etNombre"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Nombre completo"
-            android:inputType="textPersonName"
-            android:padding="12dp"/>
+            android:inputType="textPersonName"/>
 
+        <!-- Usuario -->
         <EditText
             android:id="@+id/etUsuario"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Usuario"
-            android:inputType="textPersonName"
-            android:padding="12dp"/>
+            android:inputType="text"/>
 
+        <!-- Dirección -->
         <EditText
             android:id="@+id/etDireccion"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Direccion Fisica"
-            android:inputType="textPersonName"
-            android:padding="12dp"/>
+            android:hint="Dirección"
+            android:inputType="text"/>
 
+        <!-- Correo -->
         <EditText
             android:id="@+id/etCorreo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Correo electrónico"
             android:inputType="textEmailAddress"
-            android:padding="12dp"
             android:layout_marginTop="12dp"/>
 
+        <!-- Password -->
         <EditText
             android:id="@+id/etPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Contraseña"
             android:inputType="textPassword"
-            android:padding="12dp"
             android:layout_marginTop="12dp"/>
 
+        <!-- Confirm Password -->
         <EditText
             android:id="@+id/etPasswordConfirm"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Confirmar contraseña"
             android:inputType="textPassword"
-            android:padding="12dp"
             android:layout_marginTop="12dp"/>
 
+        <!-- Fecha -->
         <EditText
             android:id="@+id/etFecha"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Fecha de nacimiento (yyyy-MM-dd)"
             android:inputType="date"
-            android:padding="12dp"
             android:layout_marginTop="12dp"/>
 
-        <!-- ✅ RADIOGROUP GENERO -->
+        <!-- 🔥 GENERO CORRECTO -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Género"
+            android:layout_marginTop="12dp"/>
+
         <RadioGroup
             android:id="@+id/rgGenero"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
             android:orientation="horizontal">
 
             <RadioButton
@@ -100,13 +105,19 @@
                 android:text="Femenino"/>
         </RadioGroup>
 
-        <Spinner
-            android:id="@+id/spinnerRol"
-            android:layout_width="match_parent"
+        <!-- 🔥 SPINNER ESTACION -->
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:prompt="@string/seleccionar_rol"/>
+            android:text="Estación"
+            android:layout_marginTop="12dp"/>
 
+        <Spinner
+            android:id="@+id/spinnerEstacion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!-- BOTON REGISTRAR -->
         <Button
             android:id="@+id/btnRegistrar"
             android:layout_width="match_parent"
@@ -114,12 +125,13 @@
             android:text="Registrarse"
             android:layout_marginTop="24dp"/>
 
+        <!-- BOTON VOLVER -->
         <Button
             android:id="@+id/btnVolver"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Volver"
-            android:layout_marginTop="30dp"/>
+            android:layout_marginTop="20dp"/>
 
     </LinearLayout>
 </ScrollView>
