@@ -26,7 +26,7 @@ public class InventarioDAO {
                     "SELECT cantidad FROM inventario i " +
                             "JOIN combustible c ON i.id_combustible=c.id_combustible " +
                             "JOIN ubicacion u ON i.id_ubicacion=u.id_ubicacion " +
-                            "WHERE c.nombre=? AND u.ciudad=? AND u.zona=?",
+                            "WHERE c.nombre=? AND u.ciudad=? AND u.localidad=?",
                     new String[]{tipo, ciudad, zona}
             );
 
@@ -90,7 +90,7 @@ public class InventarioDAO {
 
         try {
             cursor = db.rawQuery(
-                    "SELECT i.cantidad, c.nombre, u.ciudad, u.zona " +
+                    "SELECT i.cantidad, c.nombre, u.ciudad, u.localidad " +
                             "FROM inventario i " +
                             "JOIN combustible c ON i.id_combustible=c.id_combustible " +
                             "JOIN ubicacion u ON i.id_ubicacion=u.id_ubicacion " +
@@ -149,7 +149,7 @@ public class InventarioDAO {
 
         try {
             cursor = db.rawQuery(
-                    "SELECT i.cantidad, c.nombre, u.ciudad, u.zona " +
+                    "SELECT i.cantidad, c.nombre, u.ciudad, u.localidad " +
                             "FROM inventario i " +
                             "JOIN combustible c ON i.id_combustible=c.id_combustible " +
                             "JOIN ubicacion u ON i.id_ubicacion=u.id_ubicacion " +
@@ -163,9 +163,9 @@ public class InventarioDAO {
                     int cantidad = cursor.getInt(0);
                     String combustible = cursor.getString(1);
                     String ciudad = cursor.getString(2);
-                    String zona = cursor.getString(3);
+                    String localidad = cursor.getString(3);
 
-                    lista.add("+" + cantidad + " | " + combustible + " | " + ciudad + " - " + zona);
+                    lista.add("+" + cantidad + " | " + combustible + " | " + ciudad + " - " + localidad);
 
                 } while (cursor.moveToNext());
             }

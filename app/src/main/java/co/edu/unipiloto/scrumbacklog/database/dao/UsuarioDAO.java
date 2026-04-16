@@ -204,7 +204,7 @@ public class UsuarioDAO {
 
         try {
             cursor = db.rawQuery(
-                    "SELECT ciudad, zona FROM ubicacion WHERE id_ubicacion = ?",
+                    "SELECT ciudad, localidad FROM ubicacion WHERE id_ubicacion = ?",
                     new String[]{String.valueOf(idUbicacion)}
             );
 

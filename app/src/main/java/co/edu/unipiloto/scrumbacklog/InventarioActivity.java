@@ -19,8 +19,10 @@ import co.edu.unipiloto.scrumbacklog.database.dao.InventarioDAO;
 import co.edu.unipiloto.scrumbacklog.database.dao.MovimientoDAO;
 import co.edu.unipiloto.scrumbacklog.database.dao.PrecioDAO;
 import co.edu.unipiloto.scrumbacklog.database.dao.UbicacionDAO;
+import co.edu.unipiloto.scrumbacklog.database.dao.UsuarioDAO;
 
 public class InventarioActivity extends AppCompatActivity {
+
     Spinner spCombustible, spCiudad, spZona;
     EditText etCantidad;
     Button btnAgregar, btnVolver;
@@ -34,6 +36,9 @@ public class InventarioActivity extends AppCompatActivity {
     PrecioDAO precioDAO;
     UbicacionDAO ubicacionDAO;
 
+    // 🔥 NUEVO
+    UsuarioDAO usuarioDAO2;
+
     // 🔥 SESIÓN
     String rol;
     int idUbicacion;
@@ -43,7 +48,7 @@ public class InventarioActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inventario);
 
-        // 🔥 OBTENER SESIÓN
+        // 🔥 SESIÓN
         SharedPreferences prefs = getSharedPreferences("sesion", MODE_PRIVATE);
         rol = prefs.getString("rol", "");
         idUbicacion = prefs.getInt("id_ubicacion", -1);
@@ -55,6 +60,9 @@ public class InventarioActivity extends AppCompatActivity {
         movimientoDAO = factory.getMovimientoDAO();
         precioDAO = factory.getPrecioDAO();
         ubicacionDAO = factory.getUbicacionDAO();
+
+        // 🔥 NUEVO
+        usuarioDAO2 = new UsuarioDAO(new DatabaseHelper(this));
 
         // XML
         spCombustible = findViewById(R.id.spCombustible);
@@ -70,9 +78,13 @@ public class InventarioActivity extends AppCompatActivity {
 
         cargarCombustiblesSpinner();
 
+        // =========================
         // 🔥 CONTROL POR ROL
+        // =========================
         if (rol.equalsIgnoreCase("ADMIN")) {
+
             cargarCiudadesSpinner();
+
             spCiudad.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -84,10 +96,36 @@ public class InventarioActivity extends AppCompatActivity {
                 @Override
                 public void onNothingSelected(AdapterView<?> parent) {}
             });
+
         } else if (rol.equalsIgnoreCase("OPERADOR")) {
-            // 🔥 OCULTAR FILTROS
-            spCiudad.setVisibility(View.GONE);
-            spZona.setVisibility(View.GONE);
+
+            // 🔥 OBTENER SU UBICACIÓN REAL
+            String[] ubicacion = usuarioDAO2.obtenerUbicacionUsuario(idUbicacion);
+
+            if (ubicacion != null) {
+                String ciudad = ubicacion[0];
+                String zona = ubicacion[1];
+
+                // 🔥 CARGAR SPINNER CON UN SOLO VALOR
+                ArrayList<String> ciudadList = new ArrayList<>();
+                ciudadList.add(ciudad);
+
+                ArrayAdapter<String> ciudadAdapter = new ArrayAdapter<>(
+                        this, android.R.layout.simple_spinner_item, ciudadList);
+                spCiudad.setAdapter(ciudadAdapter);
+
+                ArrayList<String> zonaList = new ArrayList<>();
+                zonaList.add(zona);
+
+                ArrayAdapter<String> zonaAdapter = new ArrayAdapter<>(
+                        this, android.R.layout.simple_spinner_item, zonaList);
+                spZona.setAdapter(zonaAdapter);
+
+                // 🔥 BLOQUEAR SELECCIÓN (pero visibles)
+                spCiudad.setEnabled(false);
+                spZona.setEnabled(false);
+            }
+
             actualizarInventarioOperador();
         }
 
@@ -99,18 +137,21 @@ public class InventarioActivity extends AppCompatActivity {
     // REGISTRAR ENTRADA
     // =========================
     private void registrarEntrada() {
+
         if (spCombustible.getSelectedItem() == null) {
             Toast.makeText(this, "Seleccione combustible", Toast.LENGTH_SHORT).show();
             return;
         }
 
         String cantidadTexto = etCantidad.getText().toString().trim();
+
         if (cantidadTexto.isEmpty()) {
             Toast.makeText(this, "Ingrese cantidad", Toast.LENGTH_SHORT).show();
             return;
         }
 
         double cantidad;
+
         try {
             cantidad = Double.parseDouble(cantidadTexto);
         } catch (Exception e) {
@@ -120,16 +161,22 @@ public class InventarioActivity extends AppCompatActivity {
 
         String tipo = spCombustible.getSelectedItem().toString();
         String fecha = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date());
+
         boolean resultado;
 
         if (rol.equalsIgnoreCase("ADMIN")) {
+
             String ciudad = spCiudad.getSelectedItem().toString();
             String zona = spZona.getSelectedItem().toString();
+
             double precio = precioDAO.obtenerPrecioZona(tipo, ciudad, zona);
+
             resultado = movimientoDAO.registrarEntrada(tipo, cantidad, precio, fecha, ciudad, zona);
+
         } else {
-            // 🔥 OPERADOR USA SU UBICACIÓN
-            double precio = 0; // puedes ajustar esto luego
+
+            double precio = 0;
+
             resultado = movimientoDAO.registrarEntradaPorUbicacion(
                     tipo, cantidad, precio, fecha, idUbicacion
             );
@@ -144,24 +191,21 @@ public class InventarioActivity extends AppCompatActivity {
         }
     }
 
-    // =========================
-    // UI ADMIN
-    // =========================
     private void actualizarInventarioAdmin() {
         String ciudad = spCiudad.getSelectedItem().toString();
+
         double diesel = inventarioDAO.obtenerInventarioTotalPorCiudad("Diesel", ciudad);
         double corriente = inventarioDAO.obtenerInventarioTotalPorCiudad("Corriente", ciudad);
         double extra = inventarioDAO.obtenerInventarioTotalPorCiudad("Extra", ciudad);
+
         actualizarTextos(diesel, corriente, extra);
     }
 
-    // =========================
-    // UI OPERADOR
-    // =========================
     private void actualizarInventarioOperador() {
         double diesel = inventarioDAO.obtenerInventarioPorUbicacion("Diesel", idUbicacion);
         double corriente = inventarioDAO.obtenerInventarioPorUbicacion("Corriente", idUbicacion);
         double extra = inventarioDAO.obtenerInventarioPorUbicacion("Extra", idUbicacion);
+
         actualizarTextos(diesel, corriente, extra);
     }
 
@@ -175,30 +219,31 @@ public class InventarioActivity extends AppCompatActivity {
 
     private void actualizarTextos(double diesel, double corriente, double extra) {
         double total = diesel + corriente + extra;
+
         txtInventarioDiesel.setText("Diesel: " + diesel + " gal");
         txtInventarioCorriente.setText("Corriente: " + corriente + " gal");
         txtInventarioExtra.setText("Extra: " + extra + " gal");
         txtInventarioTotal.setText("Total: " + total + " gal");
     }
 
-    // =========================
-    // SPINNERS
-    // =========================
     private void cargarCombustiblesSpinner() {
         ArrayList<String> lista = combustibleDAO.obtenerCombustibles();
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, lista);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, lista);
         spCombustible.setAdapter(adapter);
     }
 
     private void cargarCiudadesSpinner() {
         ArrayList<String> lista = ubicacionDAO.obtenerCiudades();
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, lista);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, lista);
         spCiudad.setAdapter(adapter);
     }
 
     private void cargarZonasSpinner(String ciudad) {
         ArrayList<String> lista = ubicacionDAO.obtenerZonas(ciudad);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, lista);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, lista);
         spZona.setAdapter(adapter);
     }
 }

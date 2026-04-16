@@ -26,7 +26,7 @@ public class UbicacionDAO {
     public ArrayList<String> obtenerZonas(String ciudad){
         ArrayList<String> lista = new ArrayList<>();
         Cursor cursor = db.rawQuery(
-                "SELECT zona FROM ubicacion WHERE ciudad=?",
+                "SELECT localidad FROM ubicacion WHERE ciudad=?",
                 new String[]{ciudad}
         );
 
@@ -40,7 +40,7 @@ public class UbicacionDAO {
 
     public int obtenerIdUbicacion(String ciudad, String zona){
         Cursor cursor = db.rawQuery(
-                "SELECT id_ubicacion FROM ubicacion WHERE ciudad=? AND zona=?",
+                "SELECT id_ubicacion FROM ubicacion WHERE ciudad=? AND localidad=?",
                 new String[]{ciudad, zona}
         );
 
