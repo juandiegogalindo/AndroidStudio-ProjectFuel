@@ -11,13 +11,13 @@ public class PrecioDAO {
         this.db = db;
     }
 
-    public double obtenerPrecioZona(String tipo,String ciudad,String zona){
+    public double obtenerPrecioZona(String tipo,String ciudad,String localidad){
         Cursor cursor = db.rawQuery(
                 "SELECT precio FROM precio_combustible pc " +
                         "JOIN combustible c ON pc.id_combustible=c.id_combustible " +
                         "JOIN ubicacion u ON pc.id_ubicacion=u.id_ubicacion " +
-                        "WHERE c.nombre=? AND u.ciudad=? AND u.zona=?",
-                new String[]{tipo,ciudad,zona}
+                        "WHERE c.nombre=? AND u.ciudad=? AND u.localidad=?",
+                new String[]{tipo,ciudad,localidad}
         );
 
         if(cursor.moveToFirst()){

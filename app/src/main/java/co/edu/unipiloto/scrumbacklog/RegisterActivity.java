@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import co.edu.unipiloto.scrumbacklog.database.DAOFactory;
 import co.edu.unipiloto.scrumbacklog.database.DatabaseHelper;
 import co.edu.unipiloto.scrumbacklog.database.dao.UsuarioDAO;
 import co.edu.unipiloto.scrumbacklog.model.Usuario;
@@ -26,6 +27,7 @@ public class RegisterActivity extends AppCompatActivity {
     SQLiteDatabase db;
 
     UsuarioDAO usuarioDAO;
+    DAOFactory factory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +37,8 @@ public class RegisterActivity extends AppCompatActivity {
         dbHelper = new DatabaseHelper(this);
         db = dbHelper.getWritableDatabase();
 
-        usuarioDAO = new UsuarioDAO(dbHelper);
+        factory = new DAOFactory(this);
+        usuarioDAO = factory.getUsuarioDAO();
 
         // Referencias
         etNombre = findViewById(R.id.etNombre);

@@ -37,7 +37,7 @@ public class InventarioActivity extends AppCompatActivity {
     UbicacionDAO ubicacionDAO;
 
     // 🔥 NUEVO
-    UsuarioDAO usuarioDAO2;
+    UsuarioDAO usuarioDAO;
 
     // 🔥 SESIÓN
     String rol;
@@ -60,9 +60,8 @@ public class InventarioActivity extends AppCompatActivity {
         movimientoDAO = factory.getMovimientoDAO();
         precioDAO = factory.getPrecioDAO();
         ubicacionDAO = factory.getUbicacionDAO();
+        usuarioDAO = factory.getUsuarioDAO();
 
-        // 🔥 NUEVO
-        usuarioDAO2 = new UsuarioDAO(new DatabaseHelper(this));
 
         // XML
         spCombustible = findViewById(R.id.spCombustible);
@@ -100,7 +99,7 @@ public class InventarioActivity extends AppCompatActivity {
         } else if (rol.equalsIgnoreCase("OPERADOR")) {
 
             // 🔥 OBTENER SU UBICACIÓN REAL
-            String[] ubicacion = usuarioDAO2.obtenerUbicacionUsuario(idUbicacion);
+            String[] ubicacion = usuarioDAO.obtenerUbicacionUsuario(idUbicacion);
 
             if (ubicacion != null) {
                 String ciudad = ubicacion[0];

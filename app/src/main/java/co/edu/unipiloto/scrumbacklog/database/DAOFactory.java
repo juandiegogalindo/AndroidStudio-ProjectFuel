@@ -11,6 +11,7 @@ import co.edu.unipiloto.scrumbacklog.database.dao.MovimientoDAO;
 import co.edu.unipiloto.scrumbacklog.database.dao.PedidoDAO;
 import co.edu.unipiloto.scrumbacklog.database.dao.PrecioDAO;
 import co.edu.unipiloto.scrumbacklog.database.dao.UbicacionDAO;
+import co.edu.unipiloto.scrumbacklog.database.dao.UsuarioDAO;
 
 public class DAOFactory {
 
@@ -51,5 +52,9 @@ public class DAOFactory {
 
     public DistribuidorDAO getDistribuidorDAO(){
         return new DistribuidorDAO(db);
+    }
+
+    public UsuarioDAO getUsuarioDAO(){
+        return new UsuarioDAO(db);
     }
 }

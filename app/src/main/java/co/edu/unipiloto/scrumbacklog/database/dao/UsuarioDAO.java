@@ -9,17 +9,16 @@ import co.edu.unipiloto.scrumbacklog.model.Usuario;
 
 public class UsuarioDAO {
 
-    private DatabaseHelper databaseHelper;
+    private SQLiteDatabase db;
 
-    public UsuarioDAO(DatabaseHelper databaseHelper) {
-        this.databaseHelper = databaseHelper;
+    public UsuarioDAO(SQLiteDatabase db) {
+        this.db = db;
     }
 
     // ==============================
     // INSERTAR USUARIO
     // ==============================
     public long insertarUsuario(Usuario usuario) {
-        SQLiteDatabase db = databaseHelper.getWritableDatabase();
         long resultado = -1;
 
         try {
@@ -30,10 +29,7 @@ public class UsuarioDAO {
             values.put("direccion", usuario.getDireccion());
             values.put("password", usuario.getPassword());
             values.put("rol", usuario.getRol());
-
-            // 🔥 CLAVE: GUARDAR ESTACIÓN
             values.put("id_ubicacion", usuario.getIdUbicacion());
-
             values.put("fecha_nacimiento", usuario.getFechaNacimiento());
             values.put("genero", usuario.getGenero());
             values.put("latitud", usuario.getLatitud());
@@ -54,7 +50,6 @@ public class UsuarioDAO {
     // VALIDAR SI EXISTE CORREO
     // ==============================
     public boolean existeCorreo(String correo) {
-        SQLiteDatabase db = databaseHelper.getReadableDatabase();
         Cursor cursor = null;
 
         try {
@@ -73,7 +68,6 @@ public class UsuarioDAO {
     // LOGIN POR CORREO
     // ==============================
     public boolean validarLogin(String correo, String password) {
-        SQLiteDatabase db = databaseHelper.getReadableDatabase();
         Cursor cursor = null;
 
         try {
@@ -92,7 +86,6 @@ public class UsuarioDAO {
     // LOGIN POR USUARIO
     // ==============================
     public boolean loginPorUsuario(String usuario, String password) {
-        SQLiteDatabase db = databaseHelper.getReadableDatabase();
         Cursor cursor = null;
 
         try {
@@ -111,7 +104,6 @@ public class UsuarioDAO {
     // OBTENER ROL
     // ==============================
     public String obtenerRol(String correo) {
-        SQLiteDatabase db = databaseHelper.getReadableDatabase();
         Cursor cursor = null;
 
         try {
@@ -132,10 +124,9 @@ public class UsuarioDAO {
     }
 
     // ==============================
-    // 🔥 OBTENER USUARIO COMPLETO
+    // OBTENER USUARIO COMPLETO
     // ==============================
     public Usuario obtenerUsuario(String correo) {
-        SQLiteDatabase db = databaseHelper.getReadableDatabase();
         Cursor cursor = null;
         Usuario usuario = null;
 
@@ -155,10 +146,7 @@ public class UsuarioDAO {
                 usuario.setDireccion(cursor.getString(cursor.getColumnIndexOrThrow("direccion")));
                 usuario.setPassword(cursor.getString(cursor.getColumnIndexOrThrow("password")));
                 usuario.setRol(cursor.getString(cursor.getColumnIndexOrThrow("rol")));
-
-                // 🔥 CLAVE: CARGAR ESTACIÓN
                 usuario.setIdUbicacion(cursor.getInt(cursor.getColumnIndexOrThrow("id_ubicacion")));
-
                 usuario.setFechaNacimiento(cursor.getString(cursor.getColumnIndexOrThrow("fecha_nacimiento")));
                 usuario.setGenero(cursor.getString(cursor.getColumnIndexOrThrow("genero")));
                 usuario.setLatitud(cursor.getDouble(cursor.getColumnIndexOrThrow("latitud")));
@@ -175,10 +163,9 @@ public class UsuarioDAO {
     }
 
     // ==============================
-    // (OPCIONAL) OBTENER ID UBICACION
+    // OBTENER ID UBICACION
     // ==============================
     public int obtenerIdUbicacion(String correo){
-        SQLiteDatabase db = databaseHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery(
                 "SELECT id_ubicacion FROM usuario WHERE correo=?",
                 new String[]{correo}
@@ -195,11 +182,9 @@ public class UsuarioDAO {
     }
 
     // ==============================
-// 🔥 OBTENER UBICACIÓN DEL USUARIO
-// ==============================
+    // OBTENER UBICACIÓN DEL USUARIO
+    // ==============================
     public String[] obtenerUbicacionUsuario(int idUbicacion) {
-
-        SQLiteDatabase db = databaseHelper.getReadableDatabase();
         Cursor cursor = null;
 
         try {

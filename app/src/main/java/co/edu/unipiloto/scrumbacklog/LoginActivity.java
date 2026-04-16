@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import co.edu.unipiloto.scrumbacklog.database.DAOFactory;
 import co.edu.unipiloto.scrumbacklog.database.DatabaseHelper;
 import co.edu.unipiloto.scrumbacklog.database.dao.UsuarioDAO;
 import co.edu.unipiloto.scrumbacklog.model.Usuario;
@@ -30,7 +31,8 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin = findViewById(R.id.btnLogin);
         btnVolver = findViewById(R.id.btnVolver);
 
-        usuarioDAO = new UsuarioDAO(new DatabaseHelper(this));
+        DAOFactory factory = new DAOFactory(this);
+        usuarioDAO = factory.getUsuarioDAO();
 
         btnLogin.setOnClickListener(v -> login());
         btnVolver.setOnClickListener(v -> finish());
