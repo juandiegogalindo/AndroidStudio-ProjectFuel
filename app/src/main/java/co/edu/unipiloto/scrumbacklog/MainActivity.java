@@ -79,7 +79,11 @@ public class MainActivity extends AppCompatActivity {
         switch (rol) {
 
             case "admin":
-                habilitarTodo();
+                btnConsulta.setEnabled(true);
+                btnInventario.setEnabled(true);
+                btnSalidas.setEnabled(true);
+                btnNotificador.setEnabled(true);
+                btnControl.setEnabled(true);
                 break;
 
             case "operador": // estación de servicio
@@ -100,14 +104,5 @@ public class MainActivity extends AppCompatActivity {
                 btnSalidas.setEnabled(true);
                 break;
         }
-    }
-
-    private void habilitarTodo() {
-        btnConsulta.setEnabled(true);
-        btnInventario.setEnabled(true);
-        btnSalidas.setEnabled(true);
-        btnNotificador.setEnabled(true);
-        btnRegulador.setEnabled(true);
-        btnControl.setEnabled(true);
     }
 }

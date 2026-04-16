@@ -17,7 +17,7 @@ public class UbicacionDAO {
         Cursor cursor = db.rawQuery("SELECT DISTINCT ciudad FROM ubicacion", null);
 
         while(cursor.moveToNext()){
-            lista.add(cursor.getString(0));
+            lista.add(cursor.getString(0).trim());
         }
         cursor.close();
         return lista;
@@ -31,7 +31,7 @@ public class UbicacionDAO {
         );
 
         while(cursor.moveToNext()){
-            lista.add(cursor.getString(0));
+            lista.add(cursor.getString(0).trim());
         }
 
         cursor.close();

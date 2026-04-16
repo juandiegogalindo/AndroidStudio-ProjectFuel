@@ -22,6 +22,10 @@ public class DAOFactory {
         db = manager.openDatabase();
     }
 
+    public SQLiteDatabase getDatabase() {
+        return db;
+    }
+
     public CombustibleDAO getCombustibleDAO() {
         return new CombustibleDAO(db);
     }
