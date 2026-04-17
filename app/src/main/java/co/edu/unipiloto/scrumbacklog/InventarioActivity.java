@@ -170,8 +170,15 @@ public class InventarioActivity extends AppCompatActivity {
 
             double precio = precioDAO.obtenerPrecioZona(tipo, ciudad, zona);
 
-            resultado = movimientoDAO.registrarEntrada(tipo, cantidad, precio, fecha, ciudad, zona);
+            int idUbic = ubicacionDAO.obtenerIdUbicacion(ciudad, zona);
 
+            resultado = movimientoDAO.registrarEntradaPorUbicacion(
+                    tipo,
+                    cantidad,
+                    precio,
+                    fecha,
+                    idUbic
+            );
         } else {
 
             double precio = 0;

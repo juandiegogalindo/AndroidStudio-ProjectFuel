@@ -81,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
             case "admin":
                 btnConsulta.setEnabled(true);
                 btnInventario.setEnabled(true);
-                btnSalidas.setEnabled(true);
                 btnNotificador.setEnabled(true);
                 btnControl.setEnabled(true);
                 break;

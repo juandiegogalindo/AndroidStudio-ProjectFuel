@@ -16,7 +16,7 @@ public class InventarioDAO {
     }
 
     // CONSULTA POR ZONA
-    public double obtenerInventario(String tipo, String ciudad, String zona){
+    public double obtenerInventario(String tipo, String ciudad, String zona) {
 
         Cursor cursor = null;
         double resultado = 0;
@@ -30,19 +30,19 @@ public class InventarioDAO {
                     new String[]{tipo, ciudad, zona}
             );
 
-            if(cursor.moveToFirst()){
+            if (cursor.moveToFirst()) {
                 resultado = cursor.getDouble(0);
             }
 
         } finally {
-            if(cursor != null) cursor.close();
+            if (cursor != null) cursor.close();
         }
 
         return resultado;
     }
 
     // CONSULTA POR CIUDAD
-    public double obtenerInventarioTotalPorCiudad(String tipo, String ciudad){
+    public double obtenerInventarioTotalPorCiudad(String tipo, String ciudad) {
 
         Cursor cursor = null;
         double resultado = 0;
@@ -57,15 +57,12 @@ public class InventarioDAO {
                     new String[]{tipo, ciudad}
             );
 
-            if(cursor.moveToFirst()){
-                // 🔥 Manejo de NULL
-                if(!cursor.isNull(0)){
-                    resultado = cursor.getDouble(0);
-                }
+            if (cursor.moveToFirst() && !cursor.isNull(0)) {
+                resultado = cursor.getDouble(0);
             }
 
         } finally {
-            if(cursor != null) cursor.close();
+            if (cursor != null) cursor.close();
         }
 
         return resultado;
@@ -82,7 +79,7 @@ public class InventarioDAO {
         return db.insert("inventario", null, values);
     }
 
-    // LISTAR HISTORIAL SIMPLE
+    // HISTORIAL GENERAL
     public List<String> obtenerHistorial() {
 
         List<String> lista = new ArrayList<>();
@@ -98,16 +95,13 @@ public class InventarioDAO {
                     null
             );
 
-            if (cursor.moveToFirst()) {
-                do {
-                    int cantidad = cursor.getInt(0);
-                    String combustible = cursor.getString(1);
-                    String ciudad = cursor.getString(2);
-                    String zona = cursor.getString(3);
-
-                    lista.add("+" + cantidad + " | " + combustible + " | " + ciudad + " - " + zona);
-
-                } while (cursor.moveToNext());
+            while (cursor.moveToNext()) {
+                lista.add(
+                        "+" + cursor.getInt(0) + " | " +
+                                cursor.getString(1) + " | " +
+                                cursor.getString(2) + " - " +
+                                cursor.getString(3)
+                );
             }
 
         } finally {
@@ -117,8 +111,8 @@ public class InventarioDAO {
         return lista;
     }
 
-    // 🔥 NUEVO MÉTODO (por usuario)
-    public double obtenerInventarioPorUbicacion(String tipo, int idUbicacion){
+    // CONSULTA POR UBICACION (OPERADOR)
+    public double obtenerInventarioPorUbicacion(String tipo, int idUbicacion) {
 
         Cursor cursor = null;
         double resultado = 0;
@@ -131,17 +125,18 @@ public class InventarioDAO {
                     new String[]{tipo, String.valueOf(idUbicacion)}
             );
 
-            if(cursor.moveToFirst()){
+            if (cursor.moveToFirst()) {
                 resultado = cursor.getDouble(0);
             }
 
         } finally {
-            if(cursor != null) cursor.close();
+            if (cursor != null) cursor.close();
         }
 
         return resultado;
     }
 
+    // HISTORIAL POR UBICACION
     public List<String> obtenerHistorialPorUbicacion(int idUbicacion) {
 
         List<String> lista = new ArrayList<>();
@@ -154,20 +149,17 @@ public class InventarioDAO {
                             "JOIN combustible c ON i.id_combustible=c.id_combustible " +
                             "JOIN ubicacion u ON i.id_ubicacion=u.id_ubicacion " +
                             "WHERE i.id_ubicacion=? " +
-                            "ORDER BY i.id_inventario DESC",
+                            "ORDER BY i.id DESC",
                     new String[]{String.valueOf(idUbicacion)}
             );
 
-            if (cursor.moveToFirst()) {
-                do {
-                    int cantidad = cursor.getInt(0);
-                    String combustible = cursor.getString(1);
-                    String ciudad = cursor.getString(2);
-                    String localidad = cursor.getString(3);
-
-                    lista.add("+" + cantidad + " | " + combustible + " | " + ciudad + " - " + localidad);
-
-                } while (cursor.moveToNext());
+            while (cursor.moveToNext()) {
+                lista.add(
+                        "+" + cursor.getInt(0) + " | " +
+                                cursor.getString(1) + " | " +
+                                cursor.getString(2) + " - " +
+                                cursor.getString(3)
+                );
             }
 
         } finally {

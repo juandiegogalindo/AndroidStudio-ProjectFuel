@@ -20,142 +20,110 @@ public class MovimientoDAO {
         inventarioDAO = new InventarioDAO(db);
     }
 
-    public boolean registrarEntrada(String tipo,double galones,double precio,String fecha,String ciudad,String zona){
+    // ENTRADA POR UBICACION (CORRECTO)
+    public boolean registrarEntradaPorUbicacion(String tipo, double galones, double precio, String fecha, int idUbic) {
 
         int idComb = combustibleDAO.obtenerIdCombustible(tipo);
-        int idUbic = ubicacionDAO.obtenerIdUbicacion(ciudad,zona);
-
-        if(idComb == -1 || idUbic == -1) return false;
+        if (idComb == -1 || idUbic == -1) return false;
 
         double total = galones * precio;
 
         ContentValues values = new ContentValues();
-        values.put("id_combustible",idComb);
-        values.put("id_ubicacion",idUbic);
-        values.put("tipo_movimiento","ENTRADA");
-        values.put("galones",galones);
-        values.put("precio_unitario",precio);
-        values.put("total",total);
-        values.put("fecha",fecha);
+        values.put("id_combustible", idComb);
+        values.put("id_ubicacion", idUbic);
+        values.put("tipo_movimiento", "ENTRADA");
+        values.put("galones", galones);
+        values.put("precio_unitario", precio);
+        values.put("total", total);
+        values.put("fecha", fecha);
 
-        long res = db.insert("movimientos",null,values);
+        long res = db.insert("movimientos", null, values);
 
-        if(res!=-1){
+        if (res != -1) {
             db.execSQL(
                     "UPDATE inventario SET cantidad=cantidad+? WHERE id_combustible=? AND id_ubicacion=?",
-                    new Object[]{galones,idComb,idUbic}
+                    new Object[]{galones, idComb, idUbic}
             );
+
+            verificarAlerta(idComb, idUbic);
             return true;
         }
 
         return false;
     }
 
-    public boolean registrarSalida(String tipo,double galones,double precio,String fecha,String ciudad,String zona){
+    // SALIDA POR UBICACION (CORRECTO)
+    public boolean registrarSalidaPorUbicacion(String tipo, double galones, double precio, String fecha, int idUbic) {
 
         int idComb = combustibleDAO.obtenerIdCombustible(tipo);
-        int idUbic = ubicacionDAO.obtenerIdUbicacion(ciudad,zona);
+        if (idComb == -1 || idUbic == -1) return false;
 
-        if(idComb == -1 || idUbic == -1) return false;
+        double disponible = inventarioDAO.obtenerInventarioPorUbicacion(tipo, idUbic);
 
-        double disponible = inventarioDAO.obtenerInventario(tipo, ciudad, zona);
-
-        if(disponible < galones){
-            return false; // inventario negativo
-        }
+        if (disponible < galones) return false;
 
         double total = galones * precio;
 
         ContentValues values = new ContentValues();
-        values.put("id_combustible",idComb);
-        values.put("id_ubicacion",idUbic);
-        values.put("tipo_movimiento","SALIDA");
-        values.put("galones",galones);
-        values.put("precio_unitario",precio);
-        values.put("total",total);
-        values.put("fecha",fecha);
+        values.put("id_combustible", idComb);
+        values.put("id_ubicacion", idUbic);
+        values.put("tipo_movimiento", "SALIDA");
+        values.put("galones", galones);
+        values.put("precio_unitario", precio);
+        values.put("total", total);
+        values.put("fecha", fecha);
 
-        long res = db.insert("movimientos",null,values);
+        long res = db.insert("movimientos", null, values);
 
-        if(res!=-1){
+        if (res != -1) {
             db.execSQL(
                     "UPDATE inventario SET cantidad=cantidad-? WHERE id_combustible=? AND id_ubicacion=?",
-                    new Object[]{galones,idComb,idUbic}
+                    new Object[]{galones, idComb, idUbic}
             );
+
             return true;
         }
 
         return false;
     }
 
-    public ArrayList<String> obtenerMovimientosPorUbicacion(String ciudad){
+    // HISTORIAL POR UBICACION (CORREGIDO)
+    public ArrayList<String> obtenerMovimientosPorUbicacion(int idUbicacion) {
+
         ArrayList<String> lista = new ArrayList<>();
 
         Cursor cursor = db.rawQuery(
                 "SELECT m.tipo_movimiento, c.nombre, m.galones, m.total, m.fecha " +
                         "FROM movimientos m " +
                         "JOIN combustible c ON m.id_combustible=c.id_combustible " +
-                        "JOIN ubicacion u ON m.id_ubicacion=u.id_ubicacion " +
-                        "WHERE u.ciudad=? " +
+                        "WHERE m.id_ubicacion=? " +
                         "ORDER BY m.id_movimiento DESC",
-                new String[]{ciudad}
+                new String[]{String.valueOf(idUbicacion)}
         );
 
-        while(cursor.moveToNext()){
-            String mov = cursor.getString(0);
-            String comb = cursor.getString(1);
-            double gal = cursor.getDouble(2);
-            double total = cursor.getDouble(3);
-            String fecha = cursor.getString(4);
-
-            lista.add(fecha + " | " + mov + " | " + comb + " | " + gal + " gal | $" + total);
+        while (cursor.moveToNext()) {
+            lista.add(
+                    cursor.getString(4) + " | " +
+                            cursor.getString(0) + " | " +
+                            cursor.getString(1) + " | " +
+                            cursor.getDouble(2) + " gal | $" +
+                            cursor.getDouble(3)
+            );
         }
+
         cursor.close();
         return lista;
     }
 
-    public boolean registrarEntradaPorUbicacion(String tipo,double galones,double precio,String fecha,int idUbic){
-
-        int idComb = combustibleDAO.obtenerIdCombustible(tipo);
-
-        if(idComb == -1 || idUbic == -1) return false;
-
-        double total = galones * precio;
-
-        ContentValues values = new ContentValues();
-        values.put("id_combustible",idComb);
-        values.put("id_ubicacion",idUbic);
-        values.put("tipo_movimiento","ENTRADA");
-        values.put("galones",galones);
-        values.put("precio_unitario",precio);
-        values.put("total",total);
-        values.put("fecha",fecha);
-
-        long res = db.insert("movimientos",null,values);
-
-        if(res!=-1){
-            db.execSQL(
-                    "UPDATE inventario SET cantidad=cantidad+? WHERE id_combustible=? AND id_ubicacion=?",
-                    new Object[]{galones,idComb,idUbic}
-            );
-
-            // 🔥 AQUÍ SE DISPARAN ALERTAS
-            verificarAlerta(idComb, idUbic);
-
-            return true;
-        }
-
-        return false;
-    }
-
-    private void verificarAlerta(int idComb, int idUbic){
+    // ALERTA (SIN CAMBIOS)
+    private void verificarAlerta(int idComb, int idUbic) {
 
         Cursor cursor = db.rawQuery(
                 "SELECT nivel_minimo FROM alerta WHERE id_combustible=? AND id_ubicacion=? AND activa=1",
                 new String[]{String.valueOf(idComb), String.valueOf(idUbic)}
         );
 
-        if(cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
 
             double nivelMin = cursor.getDouble(0);
 
@@ -164,11 +132,10 @@ public class MovimientoDAO {
                     new String[]{String.valueOf(idComb), String.valueOf(idUbic)}
             );
 
-            if(inv.moveToFirst()){
+            if (inv.moveToFirst()) {
                 double actual = inv.getDouble(0);
 
-                if(actual < nivelMin){
-                    // Aquí puedes luego lanzar notificación
+                if (actual < nivelMin) {
                     System.out.println("⚠ ALERTA: Nivel bajo combustible");
                 }
             }

@@ -2,10 +2,13 @@ package co.edu.unipiloto.scrumbacklog;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -14,6 +17,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import co.edu.unipiloto.scrumbacklog.Spinner.SimpleItemSelected;
 import co.edu.unipiloto.scrumbacklog.database.DAOFactory;
@@ -23,21 +27,27 @@ import co.edu.unipiloto.scrumbacklog.database.dao.InventarioDAO;
 import co.edu.unipiloto.scrumbacklog.database.dao.MovimientoDAO;
 import co.edu.unipiloto.scrumbacklog.database.dao.PrecioDAO;
 import co.edu.unipiloto.scrumbacklog.database.dao.UbicacionDAO;
+import co.edu.unipiloto.scrumbacklog.database.dao.UsuarioDAO;
 
 public class ControlInventarioActivity extends AppCompatActivity {
-    // XML
-    private LinearLayout layoutInventario, layoutHistorial;
-    private Spinner spFiltroCombustible, spFiltroUbicacion;
-    private Button btnVolver;
-    private ArrayList<String> ubicaciones;
 
-    // Base DatoS
+    private LinearLayout layoutInventario, layoutHistorial;
+    private Spinner spFiltroCombustible, spFiltroCiudad, spFiltroEstacion;
+    private Button btnVolver;
+
+    private ArrayList<String> ciudades;
+    private ArrayList<String> estaciones;
+
     DAOFactory factory;
-    CombustibleDAO combustibleDAO;
     InventarioDAO inventarioDAO;
     MovimientoDAO movimientoDAO;
-    PrecioDAO precioDAO;
     UbicacionDAO ubicacionDAO;
+    UsuarioDAO usuarioDAO;
+
+    String rol;
+    int idUbicacionUsuario;
+
+    boolean inicializado = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,142 +57,235 @@ public class ControlInventarioActivity extends AppCompatActivity {
         factory = new DAOFactory(this);
 
         inventarioDAO = factory.getInventarioDAO();
-        combustibleDAO = factory.getCombustibleDAO();
         movimientoDAO = factory.getMovimientoDAO();
-        precioDAO = factory.getPrecioDAO();
         ubicacionDAO = factory.getUbicacionDAO();
+        usuarioDAO = factory.getUsuarioDAO();
 
-        // XML
-        btnVolver = findViewById(R.id.btnVolver);
-
-        layoutInventario = findViewById(R.id.layoutInventario);
-        layoutHistorial = findViewById(R.id.layoutHistorial);
+        SharedPreferences prefs = getSharedPreferences("sesion", MODE_PRIVATE);
+        rol = prefs.getString("rol", "");
+        idUbicacionUsuario = prefs.getInt("id_ubicacion", -1);
 
         spFiltroCombustible = findViewById(R.id.spFiltroCombustible);
-        spFiltroUbicacion = findViewById(R.id.spFiltroUbicacion);
+        spFiltroCiudad = findViewById(R.id.spFiltroCiudad);
+        spFiltroEstacion = findViewById(R.id.spFiltroEstacion);
+        layoutInventario = findViewById(R.id.layoutInventario);
+        layoutHistorial = findViewById(R.id.layoutHistorial);
+        btnVolver = findViewById(R.id.btnVolver);
 
-        String[] combustibles = {"Todos", "Corriente", "Extra", "Diesel"};
-        spFiltroCombustible.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, combustibles));
+        configurarPorRol();
+        cargarCombustibles();
 
-        // 🔥 Validación importante (evita crash si DB viene vacía)
-        ubicaciones = ubicacionDAO.obtenerCiudades();
-        if (ubicaciones == null || ubicaciones.isEmpty()) {
-            ubicaciones = new ArrayList<>();
-            ubicaciones.add("Sin datos");
-        }
+        configurarListeners();
 
-        ArrayAdapter<String> adapterUbic = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, ubicaciones);
-        spFiltroUbicacion.setAdapter(adapterUbic);
-
-        refrescarVista();
-
-        spFiltroCombustible.setOnItemSelectedListener(new SimpleItemSelected(this::refrescarVista));
-        spFiltroUbicacion.setOnItemSelectedListener(new SimpleItemSelected(this::refrescarVista));
+        inicializado = true;
 
         btnVolver.setOnClickListener(v -> finish());
     }
 
+    // =========================================================
+    // CONFIGURACIÓN POR ROL
+    // =========================================================
+    private void configurarPorRol() {
+
+        if (rol.equalsIgnoreCase("CLIENTE")) {
+            finish();
+            return;
+        }
+
+        // =========================
+        // ADMIN / DISTRIBUIDOR
+        // =========================
+        if (rol.equalsIgnoreCase("ADMIN") || rol.equalsIgnoreCase("DISTRIBUIDOR")) {
+
+            cargarCiudades();
+
+            spFiltroCiudad.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    String ciudad = spFiltroCiudad.getSelectedItem().toString();
+                    cargarEstaciones(ciudad);
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {}
+            });
+
+            spFiltroEstacion.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    if (inicializado) refrescarVista();
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {}
+            });
+
+            return;
+        }
+
+        // =========================
+        // OPERADOR / ESTACIÓN
+        // =========================
+        if (rol.equalsIgnoreCase("OPERADOR")) {
+
+            String[] ubicacion = usuarioDAO.obtenerUbicacionUsuario(idUbicacionUsuario);
+
+            if (ubicacion != null) {
+
+                String ciudad = ubicacion[0];
+                String estacion = ubicacion[1];
+
+                // CIUDAD FIJA
+                spFiltroCiudad.setAdapter(new ArrayAdapter<>(
+                        this,
+                        android.R.layout.simple_spinner_dropdown_item,
+                        Collections.singletonList(ciudad)
+                ));
+                spFiltroCiudad.setEnabled(false);
+
+                // ESTACIÓN FIJA
+                spFiltroEstacion.setAdapter(new ArrayAdapter<>(
+                        this,
+                        android.R.layout.simple_spinner_dropdown_item,
+                        Collections.singletonList(estacion)
+                ));
+                spFiltroEstacion.setEnabled(false);
+            }
+        }
+    }
+
+    // =========================================================
+    // COMBUSTIBLES
+    // =========================================================
+    private void cargarCombustibles() {
+
+        String[] combustibles = {"Todos", "Corriente", "Extra", "Diesel"};
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_dropdown_item,
+                combustibles
+        );
+
+        spFiltroCombustible.setAdapter(adapter);
+    }
+
+    // =========================================================
+    // CIUDADES (ADMIN / DISTRIBUIDOR)
+    // =========================================================
+    private void cargarCiudades() {
+
+        ciudades = ubicacionDAO.obtenerCiudades();
+
+        if (ciudades == null) ciudades = new ArrayList<>();
+
+        spFiltroCiudad.setAdapter(new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_dropdown_item,
+                ciudades
+        ));
+    }
+
+    // =========================================================
+    // ESTACIONES POR CIUDAD
+    // =========================================================
+    private void cargarEstaciones(String ciudad) {
+
+        estaciones = ubicacionDAO.obtenerZonas(ciudad);
+
+        if (estaciones == null) estaciones = new ArrayList<>();
+
+        spFiltroEstacion.setAdapter(new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_dropdown_item,
+                estaciones
+        ));
+    }
+
+    // =========================================================
+    // LISTENERS
+    // =========================================================
+    private void configurarListeners() {
+
+        AdapterView.OnItemSelectedListener listener = new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (inicializado) refrescarVista();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        };
+
+        spFiltroCombustible.setOnItemSelectedListener(listener);
+    }
+
+    // =========================================================
+    // REFRESCAR VISTA
+    // =========================================================
     private void refrescarVista() {
-        if (spFiltroUbicacion.getSelectedItem() == null) return;
+
+        if (spFiltroCiudad.getSelectedItem() == null ||
+                spFiltroEstacion.getSelectedItem() == null) return;
 
         mostrarInventario();
         mostrarHistorial();
     }
 
+    // =========================================================
+    // INVENTARIO
+    // =========================================================
     private void mostrarInventario() {
+
         layoutInventario.removeAllViews();
 
-        String filtroCombustible = spFiltroCombustible.getSelectedItem().toString();
-        String filtroUbicacion = spFiltroUbicacion.getSelectedItem().toString();
+        String combustible = spFiltroCombustible.getSelectedItem().toString();
+        String ciudad = spFiltroCiudad.getSelectedItem().toString();
+        String estacion = spFiltroEstacion.getSelectedItem().toString();
 
-        String[] combustibles = filtroCombustible.equals("Todos")
+        int idUbicacion = ubicacionDAO.obtenerIdUbicacion(ciudad, estacion);
+
+        String[] tipos = combustible.equals("Todos")
                 ? new String[]{"Corriente", "Extra", "Diesel"}
-                : new String[]{filtroCombustible};
+                : new String[]{combustible};
 
-        // 🔹 NIVEL GENERAL (POR CIUDAD)
-        for (String tipo : combustibles) {
+        for (String tipo : tipos) {
 
-            double cantidad = inventarioDAO.obtenerInventarioTotalPorCiudad(tipo, filtroUbicacion);
+            double cantidad = inventarioDAO.obtenerInventario(tipo, ciudad, estacion);
 
             TextView tv = new TextView(this);
             tv.setText(tipo + ": " + cantidad + " galones");
             tv.setTextSize(16f);
 
-            ProgressBar pb = crearProgressBar(cantidad, 40);
-
             layoutInventario.addView(tv);
-            layoutInventario.addView(pb);
-        }
-
-        // 🔹 NIVEL POR ZONA
-        ArrayList<String> zonas = ubicacionDAO.obtenerZonas(filtroUbicacion);
-
-        if (zonas == null || zonas.isEmpty()) return;
-
-        for (String zona : zonas) {
-
-            TextView tvZonaHeader = new TextView(this);
-            tvZonaHeader.setText("Zona: " + zona);
-            tvZonaHeader.setTextSize(16f);
-            tvZonaHeader.setPadding(0, 12, 0, 4);
-
-            layoutInventario.addView(tvZonaHeader);
-
-            for (String tipo : combustibles) {
-
-                double cantidad = inventarioDAO.obtenerInventario(tipo, filtroUbicacion, zona);
-
-                TextView tv = new TextView(this);
-                tv.setText(tipo + ": " + cantidad + " galones");
-                tv.setTextSize(14f);
-                tv.setPadding(16, 2, 0, 2);
-
-                ProgressBar pb = crearProgressBar(cantidad, 30);
-
-                layoutInventario.addView(tv);
-                layoutInventario.addView(pb);
-            }
         }
     }
 
-    private ProgressBar crearProgressBar(double cantidad, int alto) {
-        ProgressBar pb = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
-        pb.setMax(10000);
-        pb.setProgress((int) cantidad);
-        pb.setLayoutParams(new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, alto
-        ));
-
-        if (cantidad >= 5000)
-            pb.getProgressDrawable().setColorFilter(Color.GREEN, android.graphics.PorterDuff.Mode.SRC_IN);
-        else if (cantidad >= 2000)
-            pb.getProgressDrawable().setColorFilter(Color.YELLOW, android.graphics.PorterDuff.Mode.SRC_IN);
-        else
-            pb.getProgressDrawable().setColorFilter(Color.RED, android.graphics.PorterDuff.Mode.SRC_IN);
-
-        return pb;
-    }
-
+    // =========================================================
+    // HISTORIAL
+    // =========================================================
     private void mostrarHistorial() {
+
         layoutHistorial.removeAllViews();
 
-        if (spFiltroUbicacion.getSelectedItem() == null) return;
+        String ciudad = spFiltroCiudad.getSelectedItem().toString();
+        String estacion = spFiltroEstacion.getSelectedItem().toString();
 
-        String ubicacion = spFiltroUbicacion.getSelectedItem().toString();
+        int idUbicacion = ubicacionDAO.obtenerIdUbicacion(ciudad, estacion);
 
-        ArrayList<String> movimientos = movimientoDAO.obtenerMovimientosPorUbicacion(ubicacion);
+        ArrayList<String> movimientos =
+                movimientoDAO.obtenerMovimientosPorUbicacion(idUbicacion);
 
         if (movimientos == null) return;
 
-        int count = 0;
-        for (String mov : movimientos) {
-            if (count >= 10) break;
+        int limit = Math.min(movimientos.size(), 10);
+
+        for (int i = 0; i < limit; i++) {
 
             TextView tv = new TextView(this);
-            tv.setText(mov);
+            tv.setText(movimientos.get(i));
 
             layoutHistorial.addView(tv);
-            count++;
         }
     }
 }

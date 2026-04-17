@@ -17,14 +17,23 @@
             android:textStyle="bold"
             android:layout_marginBottom="16dp"/>
 
+        <!-- COMBUSTIBLE -->
         <Spinner
             android:id="@+id/spFiltroCombustible"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"/>
 
+        <!-- CIUDAD -->
         <Spinner
-            android:id="@+id/spFiltroUbicacion"
+            android:id="@+id/spFiltroCiudad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- ESTACIÓN (NUEVO) -->
+        <Spinner
+            android:id="@+id/spFiltroEstacion"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"/>
