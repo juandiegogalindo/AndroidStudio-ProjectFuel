@@ -7,6 +7,7 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 
 import co.edu.unipiloto.scrumbacklog.R;
+import co.edu.unipiloto.scrumbacklog.activity.logIn.LoginActivity;
 
 public class MainActivity extends AppCompatActivity {
 

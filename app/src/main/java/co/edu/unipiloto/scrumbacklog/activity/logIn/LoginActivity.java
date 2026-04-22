@@ -1,4 +1,4 @@
-package co.edu.unipiloto.scrumbacklog.activity;
+package co.edu.unipiloto.scrumbacklog.activity.logIn;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import co.edu.unipiloto.scrumbacklog.R;
+import co.edu.unipiloto.scrumbacklog.activity.MainActivity;
 import co.edu.unipiloto.scrumbacklog.database.DAOFactory;
 import co.edu.unipiloto.scrumbacklog.database.dao.UsuarioDAO;
 import co.edu.unipiloto.scrumbacklog.model.Usuario;

@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ScrumBacklog">
         <activity
+            android:name=".activity.distribuidor.ProgramarPedidoActivity"
+            android:exported="false" />
+        <activity
             android:name=".ConsultaInventarioActivity"
             android:exported="false" />
         <activity
@@ -21,10 +24,10 @@
             android:name=".IngresoInventarioActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.LoginActivity"
+            android:name=".activity.logIn.LoginActivity"
             android:exported="false" /> <!-- Pantalla inicial: Login / Registro -->
         <activity
-            android:name=".activity.LoginScreenActivity"
+            android:name=".activity.logIn.LoginScreenActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,7 +36,7 @@
             </intent-filter>
         </activity> <!-- Registro de usuario -->
         <activity
-            android:name=".activity.RegisterActivity"
+            android:name=".activity.logIn.RegisterActivity"
             android:exported="false" /> <!-- Actividades del selector principal -->
         <activity
             android:name=".activity.ControlInventarioActivity"

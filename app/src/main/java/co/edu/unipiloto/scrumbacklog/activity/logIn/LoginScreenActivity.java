@@ -1,4 +1,4 @@
-package co.edu.unipiloto.scrumbacklog.activity;
+package co.edu.unipiloto.scrumbacklog.activity.logIn;
 
 import android.content.Intent;
 import android.os.Bundle;
