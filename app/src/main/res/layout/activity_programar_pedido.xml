@@ -1,10 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".activity.distribuidor.ProgramarPedidoActivity">
+    android:layout_height="match_parent">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:text="Programar Pedido"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <!-- UBICACION -->
+        <TextView
+            android:text="Ubicación"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <Spinner
+            android:id="@+id/spUbicacion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!-- DISTRIBUIDOR -->
+        <TextView
+            android:text="Distribuidor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <Spinner
+            android:id="@+id/spDistribuidor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!-- COMBUSTIBLE -->
+        <TextView
+            android:text="Combustible"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <Spinner
+            android:id="@+id/spCombustible"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!-- CANTIDAD -->
+        <EditText
+            android:id="@+id/etCantidad"
+            android:hint="Cantidad"
+            android:inputType="numberDecimal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!-- FECHA -->
+        <EditText
+            android:id="@+id/etFecha"
+            android:hint="Fecha (YYYY-MM-DD)"
+            android:focusable="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/btnSeleccionarFecha"
+            android:text="Seleccionar Fecha"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/btnGuardar"
+            android:text="Programar Pedido"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"/>
+
+    </LinearLayout>
+</ScrollView>

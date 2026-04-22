@@ -30,7 +30,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "id_ubicacion INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "nombre TEXT," +
                 "ciudad TEXT," +
-                "localidad TEXT)");
+                "localidad TEXT," +
+                "hora_apertura TEXT," +
+                "hora_cierre TEXT)");
 
         // =========================
         // INVENTARIO
@@ -161,9 +163,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("INSERT INTO combustible (nombre) VALUES ('Diesel')");
 
         // Estaciones (Bogotá por localidades)
-        db.execSQL("INSERT INTO ubicacion (nombre, ciudad, localidad) VALUES ('Estación Suba','Bogota','Suba')");
-        db.execSQL("INSERT INTO ubicacion (nombre, ciudad, localidad) VALUES ('Estación Engativa','Bogota','Engativa')");
-        db.execSQL("INSERT INTO ubicacion (nombre, ciudad, localidad) VALUES ('Estación Centro','Bogota','Centro')");
+        db.execSQL("INSERT INTO ubicacion (nombre, ciudad, localidad, hora_apertura, hora_cierre) VALUES ('Estación Suba','Bogota','Suba', '06:00', '22:00')");
+        db.execSQL("INSERT INTO ubicacion (nombre, ciudad, localidad, hora_apertura, hora_cierre) VALUES ('Estación Engativa','Bogota','Engativa', '05:00', '23:00')");
+        db.execSQL("INSERT INTO ubicacion (nombre, ciudad, localidad, hora_apertura, hora_cierre) VALUES ('Estación Centro','Bogota','Centro', '07:00', '21:00')");
 
         // Inventario inicial
         for(int u = 1; u <= 3; u++){

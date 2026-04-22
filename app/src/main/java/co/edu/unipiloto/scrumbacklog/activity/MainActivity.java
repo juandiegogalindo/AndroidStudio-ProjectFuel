@@ -7,12 +7,15 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 
 import co.edu.unipiloto.scrumbacklog.R;
+import co.edu.unipiloto.scrumbacklog.activity.distribuidor.HorariosActivity;
+import co.edu.unipiloto.scrumbacklog.activity.distribuidor.PedidosPendientesActivity;
+import co.edu.unipiloto.scrumbacklog.activity.distribuidor.ProgramarPedidoActivity;
 import co.edu.unipiloto.scrumbacklog.activity.logIn.LoginActivity;
 
 public class MainActivity extends AppCompatActivity {
 
     Button btnConsulta, btnInventario, btnSalidas, btnNotificador,
-            btnRegulador, btnControl, btnCerrarSesion;
+            btnRegulador, btnControl, btnProgramarPedido , btnHorarios, btnPedidosPendientes, btnCerrarSesion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +29,9 @@ public class MainActivity extends AppCompatActivity {
         btnNotificador = findViewById(R.id.btnNotificador);
         btnRegulador = findViewById(R.id.btnRegulador);
         btnControl = findViewById(R.id.btnControl);
+        btnProgramarPedido = findViewById(R.id.btnProgramarPedido);
+        btnPedidosPendientes = findViewById(R.id.btnPedidosPendientes);
+        btnHorarios = findViewById(R.id.btnHorarios);
         btnCerrarSesion = findViewById(R.id.btnCerrarSesion);
 
         // 🔥 CONFIGURAR PERMISOS POR ROL
@@ -49,6 +55,15 @@ public class MainActivity extends AppCompatActivity {
 
         btnControl.setOnClickListener(v ->
                 startActivity(new Intent(this, ControlInventarioActivity.class)));
+
+        btnProgramarPedido.setOnClickListener(v ->
+                startActivity(new Intent(this, ProgramarPedidoActivity.class)));
+
+        btnPedidosPendientes.setOnClickListener(v ->
+                startActivity(new Intent(this, PedidosPendientesActivity.class )));
+
+        btnHorarios.setOnClickListener(v ->
+                startActivity(new Intent(this, HorariosActivity.class)));
 
         btnCerrarSesion.setOnClickListener(view -> {
             SharedPreferences prefs = getSharedPreferences("sesion", MODE_PRIVATE);

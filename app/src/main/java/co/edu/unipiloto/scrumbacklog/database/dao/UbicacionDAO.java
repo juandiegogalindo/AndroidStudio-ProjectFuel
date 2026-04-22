@@ -53,4 +53,11 @@ public class UbicacionDAO {
         cursor.close();
         return -1;
     }
-}
+
+    public Cursor obtenerHorarios() {
+        return db.rawQuery(
+                "SELECT id_ubicacion AS _id, * FROM ubicacion",
+                null
+        );
+    }
+    }

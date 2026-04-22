@@ -50,6 +50,27 @@
         android:layout_marginBottom="16dp"/>
 
     <Button
+        android:id="@+id/btnProgramarPedido"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Programar Pedido"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/btnPedidosPendientes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Pedidos Pendientes"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/btnHorarios"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Consultar Horarios EDS"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
         android:id="@+id/btnCerrarSesion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -11,18 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ScrumBacklog">
-        <activity
-            android:name=".activity.distribuidor.ProgramarPedidoActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ConsultaInventarioActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ConsultaInventario"
-            android:exported="false" />
-        <activity
-            android:name=".IngresoInventarioActivity"
-            android:exported="false" />
+
+        <activity android:name=".activity.distribuidor.ProgramarPedidoActivity"/>
         <activity
             android:name=".activity.logIn.LoginActivity"
             android:exported="false" /> <!-- Pantalla inicial: Login / Registro -->
@@ -53,6 +43,8 @@
         <activity
             android:name=".activity.InventarioActivity"
             android:exported="false" />
+        <activity android:name=".activity.distribuidor.PedidosPendientesActivity"/>
+        <activity android:name=".activity.distribuidor.HorariosActivity"/>
         <activity
             android:name=".activity.ConsultaActivity"
             android:exported="false" /> <!-- Selector de actividades -->
