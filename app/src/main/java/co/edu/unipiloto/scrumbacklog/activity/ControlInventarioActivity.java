@@ -1,31 +1,24 @@
-package co.edu.unipiloto.scrumbacklog;
+package co.edu.unipiloto.scrumbacklog.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-import co.edu.unipiloto.scrumbacklog.Spinner.SimpleItemSelected;
+import co.edu.unipiloto.scrumbacklog.R;
 import co.edu.unipiloto.scrumbacklog.database.DAOFactory;
-import co.edu.unipiloto.scrumbacklog.database.DatabaseHelper;
-import co.edu.unipiloto.scrumbacklog.database.dao.CombustibleDAO;
 import co.edu.unipiloto.scrumbacklog.database.dao.InventarioDAO;
 import co.edu.unipiloto.scrumbacklog.database.dao.MovimientoDAO;
-import co.edu.unipiloto.scrumbacklog.database.dao.PrecioDAO;
 import co.edu.unipiloto.scrumbacklog.database.dao.UbicacionDAO;
 import co.edu.unipiloto.scrumbacklog.database.dao.UsuarioDAO;
 

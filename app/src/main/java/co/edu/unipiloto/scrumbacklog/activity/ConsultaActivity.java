@@ -1,4 +1,4 @@
-package co.edu.unipiloto.scrumbacklog;
+package co.edu.unipiloto.scrumbacklog.activity;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 
+import co.edu.unipiloto.scrumbacklog.R;
 import co.edu.unipiloto.scrumbacklog.database.DAOFactory;
 import co.edu.unipiloto.scrumbacklog.database.dao.CombustibleDAO;
 import co.edu.unipiloto.scrumbacklog.database.dao.InventarioDAO;

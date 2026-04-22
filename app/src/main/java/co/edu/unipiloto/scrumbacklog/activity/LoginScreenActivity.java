@@ -1,4 +1,4 @@
-package co.edu.unipiloto.scrumbacklog;
+package co.edu.unipiloto.scrumbacklog.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,6 +6,8 @@ import android.view.View;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import co.edu.unipiloto.scrumbacklog.R;
 
 public class LoginScreenActivity extends AppCompatActivity {
 

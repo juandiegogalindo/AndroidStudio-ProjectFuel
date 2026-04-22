@@ -1,7 +1,6 @@
-package co.edu.unipiloto.scrumbacklog;
+package co.edu.unipiloto.scrumbacklog.activity;
 
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,12 +8,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import co.edu.unipiloto.scrumbacklog.R;
 import co.edu.unipiloto.scrumbacklog.database.DAOFactory;
-import co.edu.unipiloto.scrumbacklog.database.DatabaseHelper;
-import co.edu.unipiloto.scrumbacklog.database.dao.CombustibleDAO;
 import co.edu.unipiloto.scrumbacklog.database.dao.InventarioDAO;
-import co.edu.unipiloto.scrumbacklog.database.dao.MovimientoDAO;
-import co.edu.unipiloto.scrumbacklog.database.dao.PrecioDAO;
 import co.edu.unipiloto.scrumbacklog.database.dao.UbicacionDAO;
 import co.edu.unipiloto.scrumbacklog.database.dao.UsuarioDAO;
 

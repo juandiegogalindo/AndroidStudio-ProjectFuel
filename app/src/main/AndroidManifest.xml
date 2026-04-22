@@ -21,10 +21,10 @@
             android:name=".IngresoInventarioActivity"
             android:exported="false" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".activity.LoginActivity"
             android:exported="false" /> <!-- Pantalla inicial: Login / Registro -->
         <activity
-            android:name=".LoginScreenActivity"
+            android:name=".activity.LoginScreenActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -33,28 +33,28 @@
             </intent-filter>
         </activity> <!-- Registro de usuario -->
         <activity
-            android:name=".RegisterActivity"
+            android:name=".activity.RegisterActivity"
             android:exported="false" /> <!-- Actividades del selector principal -->
         <activity
-            android:name=".ControlInventarioActivity"
+            android:name=".activity.ControlInventarioActivity"
             android:exported="false" />
         <activity
-            android:name=".ReguladorPreciosActivity"
+            android:name=".activity.ReguladorPreciosActivity"
             android:exported="false" />
         <activity
-            android:name=".NotificadorActivity"
+            android:name=".activity.NotificadorActivity"
             android:exported="false" />
         <activity
-            android:name=".SalidasActivity"
+            android:name=".activity.SalidasActivity"
             android:exported="false" />
         <activity
-            android:name=".InventarioActivity"
+            android:name=".activity.InventarioActivity"
             android:exported="false" />
         <activity
-            android:name=".ConsultaActivity"
+            android:name=".activity.ConsultaActivity"
             android:exported="false" /> <!-- Selector de actividades -->
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:exported="false" />
     </application>
 
