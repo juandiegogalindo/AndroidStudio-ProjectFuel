@@ -29,19 +29,19 @@
             android:name=".activity.logIn.RegisterActivity"
             android:exported="false" /> <!-- Actividades del selector principal -->
         <activity
-            android:name=".activity.ControlInventarioActivity"
+            android:name=".activity.distribuidor.ControlInventarioActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.ReguladorPreciosActivity"
+            android:name=".activity.operador.ReguladorPreciosActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.NotificadorActivity"
+            android:name=".activity.operador.NotificadorActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.SalidasActivity"
+            android:name=".activity.operador.SalidasActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.InventarioActivity"
+            android:name=".activity.operador.InventarioActivity"
             android:exported="false" />
         <activity android:name=".activity.distribuidor.PedidosPendientesActivity"/>
         <activity android:name=".activity.cliente.HorariosActivity"/>

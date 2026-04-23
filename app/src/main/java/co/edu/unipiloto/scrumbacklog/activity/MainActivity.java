@@ -9,9 +9,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import co.edu.unipiloto.scrumbacklog.R;
 import co.edu.unipiloto.scrumbacklog.activity.cliente.ConsultaActivity;
 import co.edu.unipiloto.scrumbacklog.activity.cliente.HorariosActivity;
+import co.edu.unipiloto.scrumbacklog.activity.distribuidor.ControlInventarioActivity;
 import co.edu.unipiloto.scrumbacklog.activity.distribuidor.PedidosPendientesActivity;
 import co.edu.unipiloto.scrumbacklog.activity.distribuidor.ProgramarPedidoActivity;
 import co.edu.unipiloto.scrumbacklog.activity.logIn.LoginActivity;
+import co.edu.unipiloto.scrumbacklog.activity.operador.InventarioActivity;
+import co.edu.unipiloto.scrumbacklog.activity.operador.NotificadorActivity;
+import co.edu.unipiloto.scrumbacklog.activity.operador.ReguladorPreciosActivity;
+import co.edu.unipiloto.scrumbacklog.activity.operador.SalidasActivity;
 
 public class MainActivity extends AppCompatActivity {
 

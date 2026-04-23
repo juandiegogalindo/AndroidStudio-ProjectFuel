@@ -1,4 +1,4 @@
-package co.edu.unipiloto.scrumbacklog.activity;
+package co.edu.unipiloto.scrumbacklog.activity.distribuidor;
 
 import androidx.appcompat.app.AppCompatActivity;
 
