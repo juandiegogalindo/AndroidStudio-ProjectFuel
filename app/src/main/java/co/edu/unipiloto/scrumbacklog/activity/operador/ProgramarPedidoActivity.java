@@ -1,4 +1,4 @@
-package co.edu.unipiloto.scrumbacklog.activity.distribuidor;
+package co.edu.unipiloto.scrumbacklog.activity.operador;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;

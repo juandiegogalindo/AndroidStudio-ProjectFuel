@@ -1,4 +1,4 @@
-package co.edu.unipiloto.scrumbacklog.activity;
+package co.edu.unipiloto.scrumbacklog.activity.operador;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,7 +7,7 @@ import android.view.*;
 import android.widget.*;
 
 import co.edu.unipiloto.scrumbacklog.R;
-import co.edu.unipiloto.scrumbacklog.activity.distribuidor.ProgramarPedidoActivity;
+import co.edu.unipiloto.scrumbacklog.activity.MainActivity;
 import co.edu.unipiloto.scrumbacklog.database.dao.PedidoDAO;
 
 public class PedidoCanceladoAdapter extends CursorAdapter {
