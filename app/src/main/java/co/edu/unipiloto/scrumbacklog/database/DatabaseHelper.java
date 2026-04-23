@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "app.db";
-    private static final int DATABASE_VERSION = 25; // 🔥 SUBE OTRA VEZ
+    private static final int DATABASE_VERSION = 27; // 🔥 SUBE OTRA VEZ
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -35,6 +35,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "localidad TEXT," +
                 "hora_apertura TEXT," +
                 "hora_cierre TEXT)");
+
+        // ALERTA
+        db.execSQL("CREATE TABLE alerta (" +
+                "id_alerta INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "id_combustible INTEGER," +
+                "id_ubicacion INTEGER," +
+                "nivel_minimo REAL," +
+                "activa INTEGER DEFAULT 1," +
+                "FOREIGN KEY(id_combustible) REFERENCES combustible(id_combustible)," +
+                "FOREIGN KEY(id_ubicacion) REFERENCES ubicacion(id_ubicacion))");
 
         // INVENTARIO
         db.execSQL("CREATE TABLE inventario (" +
@@ -122,5 +132,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("INSERT INTO ubicacion (nombre, ciudad, localidad, hora_apertura, hora_cierre) VALUES ('Estación Suba','Bogota','Suba','06:00','22:00')");
         db.execSQL("INSERT INTO ubicacion (nombre, ciudad, localidad, hora_apertura, hora_cierre) VALUES ('Estación Engativa','Bogota','Engativa','05:00','23:00')");
         db.execSQL("INSERT INTO ubicacion (nombre, ciudad, localidad, hora_apertura, hora_cierre) VALUES ('Estación Centro','Bogota','Centro','07:00','21:00')");
+
+        for (int u = 1; u <= 3; u++){
+            db.execSQL("INSERT INTO inventario VALUES (NULL,1,"+u+",10000)");
+            db.execSQL("INSERT INTO inventario VALUES (NULL,2,"+u+",8000)");
+            db.execSQL("INSERT INTO inventario VALUES (NULL,3,"+u+",7500)");
+        }
+        db.execSQL("INSERT INTO precio_combustible VALUES (NULL,1,1,16000)");
+        db.execSQL("INSERT INTO precio_combustible VALUES (NULL,2,1,22700)");
+        db.execSQL("INSERT INTO precio_combustible VALUES (NULL,3,1,13200)");
+        db.execSQL("INSERT INTO precio_combustible VALUES (NULL,1,2,15900)");
+        db.execSQL("INSERT INTO precio_combustible VALUES (NULL,2,2,22600)");
+        db.execSQL("INSERT INTO precio_combustible VALUES (NULL,3,2,13100)");
+        db.execSQL("INSERT INTO precio_combustible VALUES (NULL,1,3,15800)");
+        db.execSQL("INSERT INTO precio_combustible VALUES (NULL,2,3,22500)");
+        db.execSQL("INSERT INTO precio_combustible VALUES (NULL,3,3,13000)");
     }
 }

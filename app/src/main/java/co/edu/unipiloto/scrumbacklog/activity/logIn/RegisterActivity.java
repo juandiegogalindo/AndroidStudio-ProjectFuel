@@ -140,7 +140,7 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         // 🔥 ROL CORRECTO (CONSISTENTE)
-        String rol = "CLIENTE";
+        String rol = "operador";
 
         // 🔥 CREAR OBJETO USUARIO
         Usuario nuevo = new Usuario();

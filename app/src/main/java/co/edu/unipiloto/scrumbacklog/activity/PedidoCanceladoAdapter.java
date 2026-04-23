@@ -35,10 +35,13 @@ public class PedidoCanceladoAdapter extends CursorAdapter {
         Button btnReagendar = view.findViewById(R.id.btnReagendar);
         Button btnVolver = view.findViewById(R.id.btnVolver);
 
+        // ✅ ID correcto
+        int id = cursor.getInt(cursor.getColumnIndexOrThrow("_id"));
 
-        int id = cursor.getInt(cursor.getColumnIndexOrThrow("id_pedido"));
-        int ubicacion = cursor.getInt(cursor.getColumnIndexOrThrow("id_ubicacion"));
-        int combustible = cursor.getInt(cursor.getColumnIndexOrThrow("id_combustible"));
+        // ✅ AHORA SON STRINGS (no IDs)
+        String ubicacion = cursor.getString(cursor.getColumnIndexOrThrow("ubicacion"));
+        String combustible = cursor.getString(cursor.getColumnIndexOrThrow("combustible"));
+
         double cantidad = cursor.getDouble(cursor.getColumnIndexOrThrow("cantidad"));
         String fecha = cursor.getString(cursor.getColumnIndexOrThrow("fecha"));
         String motivo = cursor.getString(cursor.getColumnIndexOrThrow("motivo_cancelacion"));
@@ -55,16 +58,18 @@ public class PedidoCanceladoAdapter extends CursorAdapter {
         btnReagendar.setOnClickListener(v ->  {
             Intent intent = new Intent(context, ProgramarPedidoActivity.class);
 
-            intent.putExtra("id_ubicacion", ubicacion);
-            intent.putExtra("id_combustible", combustible);
+            // ⚠️ YA NO TIENES LOS IDs → aquí hay un detalle importante
+            intent.putExtra("ubicacion", ubicacion);
+            intent.putExtra("combustible", combustible);
             intent.putExtra("cantidad", cantidad);
 
             context.startActivity(intent);
         });
 
+        // ⚠️ ESTE BOTÓN ES PROBLEMÁTICO AQUÍ
         btnVolver.setOnClickListener(v -> {
             Intent intent = new Intent(context, MainActivity.class);
             context.startActivity(intent);
         });
-        }
     }
+}

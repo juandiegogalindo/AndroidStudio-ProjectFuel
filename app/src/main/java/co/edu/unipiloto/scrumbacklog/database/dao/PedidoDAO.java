@@ -12,10 +12,17 @@ public class PedidoDAO {
         this.db = db;
     }
 
-
+    // ✅ PEDIDOS PENDIENTES (CON JOIN Y SIN *)
     public Cursor obtenerPedidosPendientes() {
         return db.rawQuery(
-                "SELECT id_pedido AS _id, * FROM pedido WHERE estado = 'PENDIENTE'",
+                "SELECT p.id_pedido AS _id, " +
+                        "u.nombre AS ubicacion, " +
+                        "c.nombre AS combustible, " +
+                        "p.cantidad, p.fecha " +
+                        "FROM pedido p " +
+                        "JOIN ubicacion u ON p.id_ubicacion = u.id_ubicacion " +
+                        "JOIN combustible c ON p.id_combustible = c.id_combustible " +
+                        "WHERE p.estado = 'PENDIENTE'",
                 null
         );
     }
@@ -42,26 +49,31 @@ public class PedidoDAO {
         db.update("pedido", values, "id_pedido = ?", new String[]{String.valueOf(idPedido)});
     }
 
-    // 🔍 OBTENER PEDIDOS CANCELADOS
+    // ✅ CANCELADOS (CORREGIDO TAMBIÉN)
     public Cursor obtenerPedidosCancelados() {
         return db.rawQuery(
-                "SELECT id_pedido AS _id, * FROM pedido WHERE estado = 'CANCELADO'",
+                "SELECT p.id_pedido AS _id, " +
+                        "u.nombre AS ubicacion, " +
+                        "c.nombre AS combustible, " +
+                        "p.cantidad, p.fecha, p.motivo_cancelacion " +
+                        "FROM pedido p " +
+                        "JOIN ubicacion u ON p.id_ubicacion = u.id_ubicacion " +
+                        "JOIN combustible c ON p.id_combustible = c.id_combustible " +
+                        "WHERE p.estado = 'CANCELADO'",
                 null
         );
     }
 
-    // 🔄 REAGENDAR PEDIDO
     public void reagendarPedido(int idPedido, String nuevaFecha) {
-
         ContentValues values = new ContentValues();
         values.put("fecha", nuevaFecha);
         values.put("estado", "PENDIENTE");
-        values.put("motivo_cancelacion", (String) null); // limpia el motivo
+        values.put("motivo_cancelacion", (String) null);
 
         db.update("pedido", values, "id_pedido = ?", new String[]{String.valueOf(idPedido)});
     }
-    public void crearPedido(int idUbicacion ,int idCombustible,double cantidad,String fecha){
 
+    public void crearPedido(int idUbicacion ,int idCombustible,double cantidad,String fecha){
         ContentValues values = new ContentValues();
         values.put("id_ubicacion", idUbicacion);
         values.put("id_combustible", idCombustible);
@@ -71,6 +83,4 @@ public class PedidoDAO {
 
         db.insert("pedido", null, values);
     }
-
-
 }
