@@ -7,25 +7,27 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "app.db";
-    private static final int DATABASE_VERSION = 17; // 🔥 IMPORTANTE
+    private static final int DATABASE_VERSION = 25; // 🔥 SUBE OTRA VEZ
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
+    public void onConfigure(SQLiteDatabase db) {
+        super.onConfigure(db);
+        db.setForeignKeyConstraintsEnabled(true); // 🔥 IMPORTANTE
+    }
+
+    @Override
     public void onCreate(SQLiteDatabase db) {
 
-        // =========================
         // COMBUSTIBLE
-        // =========================
         db.execSQL("CREATE TABLE combustible (" +
                 "id_combustible INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "nombre TEXT UNIQUE)");
 
-        // =========================
-        // UBICACION (ESTACIONES)
-        // =========================
+        // UBICACION
         db.execSQL("CREATE TABLE ubicacion (" +
                 "id_ubicacion INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "nombre TEXT," +
@@ -34,9 +36,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "hora_apertura TEXT," +
                 "hora_cierre TEXT)");
 
-        // =========================
         // INVENTARIO
-        // =========================
         db.execSQL("CREATE TABLE inventario (" +
                 "id_inventario INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "id_combustible INTEGER," +
@@ -46,20 +46,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "FOREIGN KEY(id_ubicacion) REFERENCES ubicacion(id_ubicacion)," +
                 "UNIQUE(id_combustible,id_ubicacion))");
 
-        // =========================
         // PRECIOS
-        // =========================
         db.execSQL("CREATE TABLE precio_combustible (" +
                 "id_precio INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "id_combustible INTEGER," +
                 "id_ubicacion INTEGER," +
-                "precio REAL," +
-                "FOREIGN KEY(id_combustible) REFERENCES combustible(id_combustible)," +
-                "FOREIGN KEY(id_ubicacion) REFERENCES ubicacion(id_ubicacion))");
+                "precio REAL)");
 
-        // =========================
         // MOVIMIENTOS
-        // =========================
         db.execSQL("CREATE TABLE movimientos (" +
                 "id_movimiento INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "id_combustible INTEGER," +
@@ -70,16 +64,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "total REAL," +
                 "fecha TEXT)");
 
-        // =========================
-        // ROLES
-        // =========================
-        db.execSQL("CREATE TABLE rol (" +
-                "id_rol INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "nombre TEXT UNIQUE)");
-
-        // =========================
-        // USUARIO (CON ESTACION)
-        // =========================
+        // USUARIO (COMPLETO)
         db.execSQL("CREATE TABLE usuario (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "nombre TEXT NOT NULL," +
@@ -97,38 +82,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "codigo_verificacion TEXT," +
                 "FOREIGN KEY(id_ubicacion) REFERENCES ubicacion(id_ubicacion))");
 
-        // =========================
-        // DISTRIBUIDOR
-        // =========================
-        db.execSQL("CREATE TABLE distribuidor (" +
-                "id_distribuidor INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "nombre TEXT," +
-                "contacto TEXT)");
-
-        // =========================
-        // PEDIDOS (REABASTECIMIENTO)
-        // =========================
+        // PEDIDO
         db.execSQL("CREATE TABLE pedido (" +
                 "id_pedido INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "id_ubicacion INTEGER," +
-                "id_distribuidor INTEGER," +
                 "id_combustible INTEGER," +
                 "cantidad REAL," +
                 "fecha TEXT," +
-                "estado TEXT," +
-                "FOREIGN KEY(id_ubicacion) REFERENCES ubicacion(id_ubicacion)," +
-                "FOREIGN KEY(id_distribuidor) REFERENCES distribuidor(id_distribuidor)," +
-                "FOREIGN KEY(id_combustible) REFERENCES combustible(id_combustible))");
-
-        // =========================
-        // ALERTAS
-        // =========================
-        db.execSQL("CREATE TABLE alerta (" +
-                "id_alerta INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "id_ubicacion INTEGER," +
-                "id_combustible INTEGER," +
-                "nivel_minimo REAL," +
-                "activa INTEGER DEFAULT 1," +
+                "estado TEXT DEFAULT 'PENDIENTE'," +
+                "motivo_cancelacion TEXT," +
                 "FOREIGN KEY(id_ubicacion) REFERENCES ubicacion(id_ubicacion)," +
                 "FOREIGN KEY(id_combustible) REFERENCES combustible(id_combustible))");
 
@@ -138,11 +100,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
-        db.execSQL("DROP TABLE IF EXISTS alerta");
         db.execSQL("DROP TABLE IF EXISTS pedido");
-        db.execSQL("DROP TABLE IF EXISTS distribuidor");
         db.execSQL("DROP TABLE IF EXISTS usuario");
-        db.execSQL("DROP TABLE IF EXISTS rol");
         db.execSQL("DROP TABLE IF EXISTS movimientos");
         db.execSQL("DROP TABLE IF EXISTS inventario");
         db.execSQL("DROP TABLE IF EXISTS precio_combustible");
@@ -152,9 +111,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    // =========================
-    // DATOS INICIALES
-    // =========================
     private void insertarDatosIniciales(SQLiteDatabase db) {
 
         // Combustibles
@@ -162,33 +118,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("INSERT INTO combustible (nombre) VALUES ('Extra')");
         db.execSQL("INSERT INTO combustible (nombre) VALUES ('Diesel')");
 
-        // Estaciones (Bogotá por localidades)
-        db.execSQL("INSERT INTO ubicacion (nombre, ciudad, localidad, hora_apertura, hora_cierre) VALUES ('Estación Suba','Bogota','Suba', '06:00', '22:00')");
-        db.execSQL("INSERT INTO ubicacion (nombre, ciudad, localidad, hora_apertura, hora_cierre) VALUES ('Estación Engativa','Bogota','Engativa', '05:00', '23:00')");
-        db.execSQL("INSERT INTO ubicacion (nombre, ciudad, localidad, hora_apertura, hora_cierre) VALUES ('Estación Centro','Bogota','Centro', '07:00', '21:00')");
-
-        // Inventario inicial
-        for(int u = 1; u <= 3; u++){
-            db.execSQL("INSERT INTO inventario VALUES (NULL,1,"+u+",10000)");
-            db.execSQL("INSERT INTO inventario VALUES (NULL,2,"+u+",8000)");
-            db.execSQL("INSERT INTO inventario VALUES (NULL,3,"+u+",7500)");
-        }
-
-        // Precios por estación
-        db.execSQL("INSERT INTO precio_combustible VALUES (NULL,1,1,16000)");
-        db.execSQL("INSERT INTO precio_combustible VALUES (NULL,2,1,22700)");
-        db.execSQL("INSERT INTO precio_combustible VALUES (NULL,3,1,13200)");
-
-        db.execSQL("INSERT INTO precio_combustible VALUES (NULL,1,2,15900)");
-        db.execSQL("INSERT INTO precio_combustible VALUES (NULL,2,2,22600)");
-        db.execSQL("INSERT INTO precio_combustible VALUES (NULL,3,2,13100)");
-
-        db.execSQL("INSERT INTO precio_combustible VALUES (NULL,1,3,15800)");
-        db.execSQL("INSERT INTO precio_combustible VALUES (NULL,2,3,22500)");
-        db.execSQL("INSERT INTO precio_combustible VALUES (NULL,3,3,13000)");
-
-        // Distribuidores
-        db.execSQL("INSERT INTO distribuidor (nombre, contacto) VALUES ('Distribuidor Central','3001234567')");
-        db.execSQL("INSERT INTO distribuidor (nombre, contacto) VALUES ('Fuel Supply SAS','3109876543')");
+        // Estaciones (SIN ID manual)
+        db.execSQL("INSERT INTO ubicacion (nombre, ciudad, localidad, hora_apertura, hora_cierre) VALUES ('Estación Suba','Bogota','Suba','06:00','22:00')");
+        db.execSQL("INSERT INTO ubicacion (nombre, ciudad, localidad, hora_apertura, hora_cierre) VALUES ('Estación Engativa','Bogota','Engativa','05:00','23:00')");
+        db.execSQL("INSERT INTO ubicacion (nombre, ciudad, localidad, hora_apertura, hora_cierre) VALUES ('Estación Centro','Bogota','Centro','07:00','21:00')");
     }
 }

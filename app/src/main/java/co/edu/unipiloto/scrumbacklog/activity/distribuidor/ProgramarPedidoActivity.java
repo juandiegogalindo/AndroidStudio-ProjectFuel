@@ -1,6 +1,7 @@
 package co.edu.unipiloto.scrumbacklog.activity.distribuidor;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
@@ -11,14 +12,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.Calendar;
 
 import co.edu.unipiloto.scrumbacklog.R;
+import co.edu.unipiloto.scrumbacklog.activity.MainActivity;
 import co.edu.unipiloto.scrumbacklog.database.DatabaseHelper;
 import co.edu.unipiloto.scrumbacklog.database.dao.PedidoDAO;
 
 public class ProgramarPedidoActivity extends AppCompatActivity {
 
-    private EditText etUbicacion, etDistribuidor, etCombustible, etCantidad, etFecha;
-    private Button btnGuardar, btnFecha;
-    private Spinner spUbicacion, spDistribuidor, spCombustible;
+    private EditText etUbicacion, etCombustible, etCantidad, etFecha;
+    private Button btnGuardar, btnFecha, btnVolver;
+    private Spinner spUbicacion, spCombustible;
     private DatabaseHelper dbHelper;
     private SQLiteDatabase db;
     private PedidoDAO pedidoDAO;
@@ -30,7 +32,6 @@ public class ProgramarPedidoActivity extends AppCompatActivity {
 
         // Referencias UI
         spUbicacion = findViewById(R.id.spUbicacion);
-        spDistribuidor = findViewById(R.id.spDistribuidor);
         spCombustible = findViewById(R.id.spCombustible);
 
         etCantidad = findViewById(R.id.etCantidad);
@@ -38,6 +39,8 @@ public class ProgramarPedidoActivity extends AppCompatActivity {
 
         btnGuardar = findViewById(R.id.btnGuardar);
         btnFecha = findViewById(R.id.btnSeleccionarFecha);
+        btnVolver = findViewById(R.id.btnVolver);
+
 
         // Base de datos
         dbHelper = new DatabaseHelper(this);
@@ -50,6 +53,10 @@ public class ProgramarPedidoActivity extends AppCompatActivity {
 
         // Guardar pedido
         btnGuardar.setOnClickListener(v -> guardarPedido());
+        btnVolver.setOnClickListener(v -> {
+            Intent intent = new Intent(ProgramarPedidoActivity.this, MainActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void cargarSpinners() {
@@ -65,17 +72,6 @@ public class ProgramarPedidoActivity extends AppCompatActivity {
                 this, android.R.layout.simple_spinner_item, ubicaciones);
         adapterUbicacion.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spUbicacion.setAdapter(adapterUbicacion);
-
-        // Distribuidores
-        String[] distribuidores = {
-                "Distribuidor Central",
-                "Fuel Supply SAS"
-        };
-
-        ArrayAdapter<String> adapterDistribuidor = new ArrayAdapter<>(
-                this, android.R.layout.simple_spinner_item, distribuidores);
-        adapterDistribuidor.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spDistribuidor.setAdapter(adapterDistribuidor);
 
         // Combustibles
         String[] combustibles = {
@@ -111,7 +107,6 @@ public class ProgramarPedidoActivity extends AppCompatActivity {
     private void guardarPedido() {
         try {
             int idUbicacion = spUbicacion.getSelectedItemPosition() + 1;
-            int idDistribuidor = spDistribuidor.getSelectedItemPosition() + 1;
             int idCombustible = spCombustible.getSelectedItemPosition() + 1;
             double cantidad = Double.parseDouble(etCantidad.getText().toString());
             String fecha = etFecha.getText().toString();
@@ -121,7 +116,7 @@ public class ProgramarPedidoActivity extends AppCompatActivity {
                 return;
             }
 
-            pedidoDAO.crearPedido(idUbicacion, idDistribuidor, idCombustible, cantidad, fecha);
+            pedidoDAO.crearPedido(idUbicacion, idCombustible, cantidad, fecha);
 
             Toast.makeText(this, "Pedido programado correctamente", Toast.LENGTH_LONG).show();
 
@@ -134,7 +129,6 @@ public class ProgramarPedidoActivity extends AppCompatActivity {
 
     private void limpiarCampos() {
         etUbicacion.setText("");
-        etDistribuidor.setText("");
         etCombustible.setText("");
         etCantidad.setText("");
         etFecha.setText("");

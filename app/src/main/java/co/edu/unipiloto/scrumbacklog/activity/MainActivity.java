@@ -15,7 +15,8 @@ import co.edu.unipiloto.scrumbacklog.activity.logIn.LoginActivity;
 public class MainActivity extends AppCompatActivity {
 
     Button btnConsulta, btnInventario, btnSalidas, btnNotificador,
-            btnRegulador, btnControl, btnProgramarPedido , btnHorarios, btnPedidosPendientes, btnCerrarSesion;
+            btnRegulador, btnControl, btnProgramarPedido , btnHorarios,
+            btnPedidosPendientes, btnPedidosCancelados ,btnCerrarSesion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
         btnProgramarPedido = findViewById(R.id.btnProgramarPedido);
         btnPedidosPendientes = findViewById(R.id.btnPedidosPendientes);
         btnHorarios = findViewById(R.id.btnHorarios);
+        btnPedidosCancelados = findViewById(R.id.btnPedidosCancelados);
         btnCerrarSesion = findViewById(R.id.btnCerrarSesion);
 
         // 🔥 CONFIGURAR PERMISOS POR ROL
@@ -65,6 +67,9 @@ public class MainActivity extends AppCompatActivity {
         btnHorarios.setOnClickListener(v ->
                 startActivity(new Intent(this, HorariosActivity.class)));
 
+        btnPedidosCancelados.setOnClickListener(v ->
+                startActivity(new Intent(this, PedidosCanceladosActivity.class)));
+
         btnCerrarSesion.setOnClickListener(view -> {
             SharedPreferences prefs = getSharedPreferences("sesion", MODE_PRIVATE);
             prefs.edit().clear().apply();
@@ -90,6 +95,10 @@ public class MainActivity extends AppCompatActivity {
         btnNotificador.setEnabled(false);
         btnRegulador.setEnabled(false);
         btnControl.setEnabled(false);
+        btnProgramarPedido.setEnabled(false);
+        btnPedidosPendientes.setEnabled(false);
+        btnHorarios.setEnabled(false);
+        btnPedidosCancelados.setEnabled(false);
 
         if (rol == null) return;
 
@@ -109,15 +118,19 @@ public class MainActivity extends AppCompatActivity {
                 btnNotificador.setEnabled(true);
                 btnRegulador.setEnabled(true);
                 btnControl.setEnabled(true);
+                btnProgramarPedido.setEnabled(true);
+                btnPedidosCancelados.setEnabled(true);
                 break;
 
             case "cliente":
                 btnConsulta.setEnabled(true);
+                btnHorarios.setEnabled(true);
                 break;
 
             case "distribuidor":
                 btnControl.setEnabled(true);
                 btnSalidas.setEnabled(true);
+                btnPedidosPendientes.setEnabled(true);
                 break;
         }
     }

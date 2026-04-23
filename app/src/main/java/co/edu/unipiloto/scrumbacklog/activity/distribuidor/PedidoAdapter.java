@@ -1,5 +1,6 @@
 package co.edu.unipiloto.scrumbacklog.activity.distribuidor;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.view.*;
@@ -26,63 +27,50 @@ public class PedidoAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
 
         TextView tvInfo = view.findViewById(R.id.tvInfo);
-        Button btnEntregado = view.findViewById(R.id.btnEntregado);
+        EditText etMotivo = view.findViewById(R.id.etMotivo);
+        Button btnAceptar = view.findViewById(R.id.btnAceptar);
+        Button btnCancelar = view.findViewById(R.id.btnCancelar);
 
         int id = cursor.getInt(cursor.getColumnIndexOrThrow("id_pedido"));
         int ubicacion = cursor.getInt(cursor.getColumnIndexOrThrow("id_ubicacion"));
-        int distribuidor = cursor.getInt(cursor.getColumnIndexOrThrow("id_distribuidor"));
         int combustible = cursor.getInt(cursor.getColumnIndexOrThrow("id_combustible"));
         double cantidad = cursor.getDouble(cursor.getColumnIndexOrThrow("cantidad"));
         String fecha = cursor.getString(cursor.getColumnIndexOrThrow("fecha"));
 
-        // 🔥 Convertir IDs a nombres (igual que en spinner)
-        String nombreUbicacion = obtenerUbicacion(ubicacion);
-        String nombreDistribuidor = obtenerDistribuidor(distribuidor);
-        String nombreCombustible = obtenerCombustible(combustible);
-
-        String texto = "Ubicación: " + nombreUbicacion +
-                "\nDistribuidor: " + nombreDistribuidor +
-                "\nCombustible: " + nombreCombustible +
+        tvInfo.setText("Pedido #" + id +
+                "\nUbicación: " + ubicacion +
+                "\nCombustible: " + combustible +
                 "\nCantidad: " + cantidad +
-                "\nFecha: " + fecha;
+                "\nFecha: " + fecha);
 
-        tvInfo.setText(texto);
+        // ✅ ACEPTAR
+        btnAceptar.setOnClickListener(v -> {
+            pedidoDAO.aceptarPedido(id); // 🔥 CAMBIO AQUÍ
 
-        btnEntregado.setOnClickListener(v -> {
-            pedidoDAO.marcarComoEntregado(id);
+            Toast.makeText(context, "Pedido aceptado", Toast.LENGTH_SHORT).show();
 
-            Toast.makeText(context, "Pedido entregado", Toast.LENGTH_SHORT).show();
+            Cursor nuevoCursor = pedidoDAO.obtenerPedidosPendientes();
+            changeCursor(nuevoCursor);
+        });
 
-            // refrescar lista
+        // ❌ CANCELAR
+        btnCancelar.setOnClickListener(v -> {
+
+            String motivo = etMotivo.getText().toString();
+
+            if (motivo.isEmpty()) {
+                Toast.makeText(context, "Ingrese motivo", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            pedidoDAO.cancelarPedido(id, motivo);
+
+            Toast.makeText(context, "Pedido cancelado", Toast.LENGTH_SHORT).show();
+
             Cursor nuevoCursor = pedidoDAO.obtenerPedidosPendientes();
             changeCursor(nuevoCursor);
         });
     }
 
-    // 🔽 Métodos para mostrar nombres
-    private String obtenerUbicacion(int id) {
-        switch (id) {
-            case 1: return "Estación Suba";
-            case 2: return "Estación Engativá";
-            case 3: return "Estación Centro";
-            default: return "Desconocido";
-        }
-    }
 
-    private String obtenerDistribuidor(int id) {
-        switch (id) {
-            case 1: return "Distribuidor Central";
-            case 2: return "Fuel Supply SAS";
-            default: return "Desconocido";
-        }
-    }
-
-    private String obtenerCombustible(int id) {
-        switch (id) {
-            case 1: return "Corriente";
-            case 2: return "Extra";
-            case 3: return "Diesel";
-            default: return "Desconocido";
-        }
-    }
 }

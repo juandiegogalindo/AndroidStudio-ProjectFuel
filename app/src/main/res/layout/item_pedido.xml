@@ -11,9 +11,31 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <Button
-        android:id="@+id/btnEntregado"
-        android:text="Marcar como entregado"
-        android:layout_width="wrap_content"
+    <!-- Motivo cancelación -->
+    <EditText
+        android:id="@+id/etMotivo"
+        android:hint="Motivo de cancelación"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btnAceptar"
+            android:text="Aceptar"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:id="@+id/btnCancelar"
+            android:text="Cancelar"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
 </LinearLayout>

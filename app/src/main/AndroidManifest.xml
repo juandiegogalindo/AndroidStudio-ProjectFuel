@@ -45,6 +45,7 @@
             android:exported="false" />
         <activity android:name=".activity.distribuidor.PedidosPendientesActivity"/>
         <activity android:name=".activity.distribuidor.HorariosActivity"/>
+        <activity android:name=".activity.PedidosCanceladosActivity"/>
         <activity
             android:name=".activity.ConsultaActivity"
             android:exported="false" /> <!-- Selector de actividades -->

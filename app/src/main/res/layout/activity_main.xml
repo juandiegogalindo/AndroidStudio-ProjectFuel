@@ -71,6 +71,13 @@
         android:layout_marginBottom="16dp"/>
 
     <Button
+        android:id="@+id/btnPedidosCancelados"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Pedidos Cancelados"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
         android:id="@+id/btnCerrarSesion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
