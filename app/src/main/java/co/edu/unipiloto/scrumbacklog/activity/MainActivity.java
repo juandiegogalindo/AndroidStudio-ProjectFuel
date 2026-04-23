@@ -7,7 +7,8 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 
 import co.edu.unipiloto.scrumbacklog.R;
-import co.edu.unipiloto.scrumbacklog.activity.distribuidor.HorariosActivity;
+import co.edu.unipiloto.scrumbacklog.activity.cliente.ConsultaActivity;
+import co.edu.unipiloto.scrumbacklog.activity.cliente.HorariosActivity;
 import co.edu.unipiloto.scrumbacklog.activity.distribuidor.PedidosPendientesActivity;
 import co.edu.unipiloto.scrumbacklog.activity.distribuidor.ProgramarPedidoActivity;
 import co.edu.unipiloto.scrumbacklog.activity.logIn.LoginActivity;

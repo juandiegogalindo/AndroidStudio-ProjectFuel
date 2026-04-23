@@ -44,10 +44,10 @@
             android:name=".activity.InventarioActivity"
             android:exported="false" />
         <activity android:name=".activity.distribuidor.PedidosPendientesActivity"/>
-        <activity android:name=".activity.distribuidor.HorariosActivity"/>
+        <activity android:name=".activity.cliente.HorariosActivity"/>
         <activity android:name=".activity.PedidosCanceladosActivity"/>
         <activity
-            android:name=".activity.ConsultaActivity"
+            android:name=".activity.cliente.ConsultaActivity"
             android:exported="false" /> <!-- Selector de actividades -->
         <activity
             android:name=".activity.MainActivity"

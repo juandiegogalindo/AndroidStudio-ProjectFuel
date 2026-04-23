@@ -1,13 +1,10 @@
 package co.edu.unipiloto.scrumbacklog.activity;
 
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.view.*;
 import android.widget.*;
-
-import java.util.Calendar;
 
 import co.edu.unipiloto.scrumbacklog.R;
 import co.edu.unipiloto.scrumbacklog.activity.distribuidor.ProgramarPedidoActivity;

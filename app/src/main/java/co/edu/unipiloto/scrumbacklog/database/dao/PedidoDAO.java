@@ -3,7 +3,7 @@ package co.edu.unipiloto.scrumbacklog.database.dao;
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.Cursor;
-import android.content.ContentValues;
+
 public class PedidoDAO {
 
     private SQLiteDatabase db;

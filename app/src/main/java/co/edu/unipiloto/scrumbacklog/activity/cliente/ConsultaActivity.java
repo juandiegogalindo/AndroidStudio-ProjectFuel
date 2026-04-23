@@ -1,4 +1,4 @@
-package co.edu.unipiloto.scrumbacklog.activity;
+package co.edu.unipiloto.scrumbacklog.activity.cliente;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;

@@ -1,4 +1,4 @@
-package co.edu.unipiloto.scrumbacklog.activity.distribuidor;
+package co.edu.unipiloto.scrumbacklog.activity.cliente;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;

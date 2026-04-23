@@ -1,6 +1,5 @@
 package co.edu.unipiloto.scrumbacklog.activity.distribuidor;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.view.*;
